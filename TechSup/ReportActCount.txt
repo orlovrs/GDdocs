@@ -1,0 +1,551 @@
+﻿//   Функция для генерации отчета по работам тех. поддержки в формате gdoc
+function generateReport_() {
+  
+  var InputAr = new Array();
+  
+  var Tasks = ReadBaseData();
+  InputAr['Datas'] = Tasks;
+  
+  var spreadsheet = SpreadsheetApp.getActive();
+  InputAr['DocName'] = SpreadsheetApp.getActive().getSheetName(); //Запоминаем имя текущего листа  
+  
+  if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать отчет за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
+  return false;
+  
+  dt = new Date();
+  InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
+  InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
+  InputAr['ReportName'] = 'Отчет_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
+  
+  InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
+  if (!InputAr['Date'])
+    return false;
+  
+  var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
+  var data = StaticData.getDataRange().getValues();
+  
+  InputAr['ContractNum'] = data[0][1];
+  
+  InputAr['ContractDate'] = data[1][1];
+  InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
+  if (!InputAr['ContractDate'])
+    return false;
+  
+  InputAr['CompanyName'] = data[2][1];
+  InputAr['FullManagerName'] = data[3][1];
+  InputAr['FullClientName'] = data[4][1];
+  
+  InputAr['ReportName']+=InputAr['CompanyName'];
+  
+  var thisFileId = SpreadsheetApp.getActive().getId();
+  var thisFile = DocsList.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents()[0].getName();
+  
+  if (!CheckFileExist(InputAr['ReportName'], parentFolder))
+    return false;
+  
+  InputAr['ShortClientName'] = FullIntoShortName(InputAr['FullClientName']);
+  InputAr['ShortManagerName'] = FullIntoShortName(InputAr['FullManagerName']);
+  
+  InputAr['FullCompanyName'] = FullCompanyNameForm(InputAr['CompanyName']);
+    if (!InputAr['FullCompanyName'])
+    {
+      Browser.msgBox('Отсутствует расшифровка такому типу организации заказчика! Приложение завершает работу');
+      return false;
+    }
+  
+  var doc = CreateNewDoc('1mMIRmFfGUc2iIRWmbAQFSLBvqZKMookA61qcVvCEuJE',InputAr['ReportName']);
+  FillTemplate(doc, InputAr);
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
+  
+}  
+
+//   Функция для генерации акта по работам тех. поддержки в формате gdoc
+
+function generateAct_() {
+  
+  var InputAr = new Array();
+  
+  var Tasks = ReadBaseData();
+  InputAr['Datas'] = Tasks;
+  
+  var spreadsheet = SpreadsheetApp.getActive();
+  InputAr['DocName'] = SpreadsheetApp.getActive().getSheetName(); //Запоминаем имя текущего листа  
+  
+  if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать акт за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
+  return false;
+  
+  dt = new Date();
+  InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
+  InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
+  InputAr['ReportName'] = 'Акт_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
+  
+  InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
+  if (!InputAr['Date'])
+    return false;
+  
+  InputAr['LastDay'] = InputAr['Date'].slice(InputAr['Date'].indexOf('-')+2);
+  if (!InputAr['LastDay'])
+    return false;
+  
+  var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
+  var data = StaticData.getDataRange().getValues();
+  
+  InputAr['ContractNum'] = data[0][1];
+  
+  InputAr['ContractDate'] = data[1][1];
+  InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
+  if (!InputAr['ContractDate'])
+    return false;
+  
+  InputAr['CompanyName'] = data[2][1];
+  InputAr['FullManagerName'] = data[3][1];
+  InputAr['FullClientName'] = data[4][1];
+  
+  InputAr['ActNum'] = ActNumForm(InputAr, data[5][1], data[6][1]);
+  SpreadsheetApp.getActiveSpreadsheet().getRange('b7').setValue(SpreadsheetApp.getActiveSpreadsheet().getRange('b7').getValue()+1);
+  InputAr['Director'] = data[7][1];
+  InputAr['ShortDirectorName'] = data[8][1];
+  
+  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  
+  InputAr['Float'] = FloatPart(InputAr['Sum']);
+  InputAr['Integer'] = IntegerPart(InputAr['Sum']);
+    
+  InputAr['ReportName']+=InputAr['CompanyName'];
+  
+  var thisFileId = SpreadsheetApp.getActive().getId();
+  var thisFile = DocsList.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents()[0].getName();
+  
+  if (!CheckFileExist(InputAr['ReportName'], parentFolder))
+    return false;
+  
+  InputAr['ShortClientName'] = FullIntoShortName(InputAr['FullClientName']);
+  InputAr['ShortManagerName'] = FullIntoShortName(InputAr['FullManagerName']);
+  
+  var doc = CreateNewDoc('1bGeC4CEyTP_AUV6z2Fx5q7pImdI4KY2kyiv7dCvf93Q', InputAr['ReportName']);
+  FillTemplate(doc, InputAr);
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
+}
+
+function generateCount_()
+{
+  var InputAr = new Array();
+  
+  var Tasks = ReadBaseData();
+  InputAr['Datas'] = Tasks;
+  
+  var spreadsheet = SpreadsheetApp.getActive();
+  InputAr['DocName'] = SpreadsheetApp.getActive().getSheetName(); //Запоминаем имя текущего листа  
+  
+  if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать счет за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
+  return false;
+  
+  dt = new Date();
+  InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
+  InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
+  InputAr['ReportName'] = 'Счет_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
+  
+  InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
+  if (!InputAr['Date'])
+    return false;
+  
+  InputAr['LastDay'] = InputAr['Date'].slice(InputAr['Date'].indexOf('-')+2);
+  if (!InputAr['LastDay'])
+    return false;
+  
+  var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
+  var data = StaticData.getDataRange().getValues();
+  
+  InputAr['ContractNum'] = data[0][1];
+  
+  InputAr['ContractDate'] = data[1][1];
+  InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
+  if (!InputAr['ContractDate'])
+    return false;
+  
+  InputAr['CompanyName'] = data[2][1];
+  InputAr['FullManagerName'] = data[3][1];
+  InputAr['FullClientName'] = data[4][1];
+  
+  InputAr['ActNum'] = ActNumForm(InputAr, data[5][1], data[6][1]);
+  InputAr['Director'] = data[7][1];
+  InputAr['ShortDirectorName'] = data[8][1];
+  
+  InputAr['WorkName'] = data[9][1];
+  
+  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  
+  InputAr['Float'] = FloatPart(InputAr['Sum']);
+  InputAr['Integer'] = IntegerPart(InputAr['Sum']);
+    
+  InputAr['ReportName']+=InputAr['CompanyName'];
+  
+  var thisFileId = SpreadsheetApp.getActive().getId();
+  var thisFile = DocsList.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents()[0].getName();
+  
+  if (!CheckFileExist(InputAr['ReportName'], parentFolder))
+    return false;
+  
+  InputAr['ShortClientName'] = FullIntoShortName(InputAr['FullClientName']);
+  InputAr['ShortManagerName'] = FullIntoShortName(InputAr['FullManagerName']);
+  
+  InputAr['WorksNum'] = 1;
+  InputAr['Rubles'] = FinancesWord(InputAr['Sum'], 'рубл', ['ь', 'я', 'ей']);
+  InputAr['Copies'] = FinancesWord(InputAr['Sum'], 'копе', ['йка', 'йки', 'ек']);
+  InputAr['TextSum'] = TextSum(InputAr['Sum']);
+  InputAr['TextSum'] = InputAr['TextSum'].charAt(0).toUpperCase() + InputAr['TextSum'].substr(1);
+  
+  var doc = CreateNewSpread('0ApegwE1puQiVdDJwZ3JHanNCOXZTNEp1ak1zSFgxdkE', InputAr['ReportName']);
+  FillSpread(doc, InputAr);
+  //SpreadsheetApp.getActiveSpreadsheet().getDataRange().getCell(row, column)
+  doc.insertRowAfter(17);
+  
+  doc.getDataRange().getCell(18, 2).setValue(1);
+  doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']);
+  doc.getDataRange().getCell(18, 5).setValue('шт');
+  doc.getDataRange().getCell(18, 6).setValue(1);
+  doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum']);
+  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum']);
+  
+  
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
+}
+
+/**
+ * A special function that runs when the spreadsheet is open, used to add a
+ * custom menu to the spreadsheet.
+ */
+function onOpen() {  
+  var spreadsheet = SpreadsheetApp.getActive();
+  var menuItems = [
+    {name: 'Сгенерировать отчет...', functionName: 'generateReport_'},
+    {name: 'Сгенерировать акт...', functionName: 'generateAct_'},
+    {name: 'Сгенерировать счет...', functionName: 'generateCount_'}
+  ];
+  spreadsheet.addMenu('Отчет', menuItems);
+}
+
+function CreateNewDoc(ID, docName) {
+ //Making copy of blank file
+  var blankDoc = DocsList.getFileById(ID).makeCopy(docName);
+  
+  var thisFileId = SpreadsheetApp.getActive().getId();
+  var thisFile = DocsList.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents()[0].getName();
+  
+  blankDoc.addToFolder(DocsList.getFolder(parentFolder));
+  
+  return curDoc = DocumentApp.openById(blankDoc.getId()); 
+}
+
+function CreateNewSpread(ID, docName) {
+ //Making copy of blank file
+  var blankDoc = DocsList.getFileById(ID).makeCopy(docName);
+  //blankDoc.addToFolder(DocsList.getFolder(Folder.getId()));
+  
+  var thisFileId = SpreadsheetApp.getActive().getId();
+  var thisFile = DocsList.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents()[0].getName();
+  
+  blankDoc.addToFolder(DocsList.getFolder(parentFolder));
+  return curDoc = SpreadsheetApp.openById(blankDoc.getId()); 
+}
+
+function FillTemplate(inDoc, inData) {
+ 
+  //Replace masks
+  for (var key in inData)
+    if (key == 'Datas') continue;
+    else
+    inDoc.replaceText('<'+key+'>', inData[key]);
+  
+   //get first table in document
+  var table = inDoc.getTables()[0];  
+  var sum = 0;
+  
+  for (i=0; i< inData['Datas'].length; i++) {
+    var row = table.insertTableRow(i+1);
+    row.appendTableCell(inData['Datas'][i][0]);
+    row.appendTableCell(inData['Datas'][i][1]);
+    row.appendTableCell(inData['Datas'][i][2]);
+    row.appendTableCell(inData['Datas'][i][3]);
+    row.appendTableCell(inData['Datas'][i][4]);
+    sum += +inData['Datas'][i][4];
+  }
+  
+  table.getCell(inData['Datas'].length + 1, 4).setText(sum);
+  curDoc.saveAndClose();
+ }
+
+function FillSpread(inDoc, inData) {
+  //Replace masks
+  var data = inDoc.getDataRange().getValues();
+  
+  for (var key in inData)
+  {
+    if (key == 'Datas') continue;
+    for (i=0; i<data.length; i++)
+      for (j=0; j<data[i].length; j++)
+      {
+        while (data[i][j].indexOf('<' + key + '>') != -1 )
+        {
+          data[i][j] = data[i][j].replace('<' + key + '>', inData[key]);
+        }
+      }
+  }
+  
+  inDoc.getDataRange().setValues(data);
+}
+
+//Считываем со страницы всю информацию по работам
+ function ReadBaseData() {
+ var ssDoc = SpreadsheetApp.getActiveSheet();
+ 
+ //get filled range
+ var data = ssDoc.getDataRange().getValues();
+ 
+ //for start from 1 because first row is text column headers
+ var res = new Array( new Array() );
+ for (i=1; i< data.length; i++) { 
+  res[i-1] = data[i];
+ 
+ }
+ return res;
+}
+
+//Преобразует полное имя к короткому (фамилия + инициалы)
+function FullIntoShortName (inData)
+{
+  return inData.slice(0, inData.indexOf(' ')+1) + //Фамилия
+         inData[inData.indexOf(' ')+1] + '.' +   //Первая буква имени и точка
+         inData[inData.lastIndexOf(' ')+1] + '.'; //Первая буква отчества
+}
+
+//Преобразует краткое название компании в полное в родительном падеже
+function FullCompanyNameForm (inDataName)
+{
+    var inDataType = inDataName.slice(0, inDataName.indexOf(' ')).toLowerCase();
+    switch (inDataType) {
+    case 'ооо': return 'Общества с ограниченной ответственностью ' + inDataName.slice(inDataName.indexOf(' ')+1); break;
+    case 'зао': return 'Закрытого акционерного общества ' + inDataName.slice(inDataName.indexOf(' ')+1); break;
+    case 'оао': return 'Открытого акционерного общества ' + inDataName.slice(inDataName.indexOf(' ')+1); break;
+      default: return false;
+    }
+}
+
+//Функция для формирования читабельного отчетного периода
+function ReportPeriodForm(inMon, inYear)
+{
+  switch (inMon) {
+      case 'январь' : return '1 января ' + inYear + ' - 31 января ' + inYear; break;
+      case 'февраль' : 
+      if ((inYear%4 == 0) && (inYear%100 != 0) || (inYear%400 == 0))
+        return '1 февраля ' + inYear + ' - 29 февраля ' + inYear;
+      else
+        return '1 февраля ' + inYear + ' - 28 февраля ' + inYear; break;
+      case 'март' : return '1 марта ' + inYear + ' - 31 марта ' + inYear; break;
+      case 'апрель' : return '1 апреля ' + inYear + ' - 30 апреля ' + inYear; break;
+      case 'май' : return '1 мая ' + inYear + ' - 31 мая ' + inYear; break;
+      case 'июнь' : return '1 июня ' + inYear + ' - 30 июня  ' + inYear; break;
+      case 'июль' : return '1 июля ' + inYear + ' - 31 июля ' + inYear; break;
+      case 'август' : return '1 августа ' + inYear + ' - 31 августа ' + inYear; break;
+      case 'сентябрь' : return '1 сентября ' + inYear + ' - 30 сентября ' + inYear; break;
+      case 'октябрь' : return '1 октября ' + inYear + ' - 31 октября ' + inYear; break;
+      case 'ноябрь' : return '1 ноября ' + inYear + ' - 30 ноября ' + inYear; break;
+      case 'декабрь' : return '1 декабря ' + inYear + ' - 31 декабря ' + inYear; break;
+    default: Browser.msgBox('Ошибка', 'Проверьте дату в названии листа. Приложение завершает свою работу', Browser.Buttons.OK); return false;
+  }
+}
+
+//Функция приводит формат даты подписания договора к виду, в котором ее можно вставить в документ
+function ContractDateForm(inData)
+{
+  inData = '«' + inData.slice(0, inData.indexOf('.')) + '» ' + inData.slice(inData.indexOf('.')+1);
+  switch (inData.slice(inData.indexOf(' ')+1, inData.indexOf('.'))) {
+      case '01': return inData.slice(0, inData.indexOf(' ')) +
+        ' января ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '02': return inData.slice(0, inData.indexOf(' ')) +
+        ' февраля ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '03': return inData.slice(0, inData.indexOf(' ')) +
+        ' марта ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '04': return inData.slice(0, inData.indexOf(' ')) +
+        ' апреля ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '05': return inData.slice(0, inData.indexOf(' ')) +
+        ' мая ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '06': return inData.slice(0, inData.indexOf(' ')) +
+        ' июня ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '07': return inData.slice(0, inData.indexOf(' ')) +
+        ' июля ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '08': return inData.slice(0, inData.indexOf(' ')) +
+        ' августа ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '09': return inData.slice(0, inData.indexOf(' ')) +
+        ' сентября ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '10': return inData.slice(0, inData.indexOf(' ')) +
+        ' октября ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '11': return inData.slice(0, inData.indexOf(' ')) +
+        ' ноября ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      case '12': return inData.slice(0, inData.indexOf(' ')) +
+        ' декабря ' + inData.slice(inData.indexOf('.')+1) + ' г.'; break;
+      default: Browser.msgBox('Ошибка', 'Неверно задана дата подписания договора. Приложение завершает свою работу', Browser.Buttons.OK); return false; 
+  }
+}
+
+function ActNumForm(inData, NumConfirm, NumMade)
+{
+  if (NumConfirm == 0)
+  {
+    if (NumMade<10)
+      return inData['ContractNum'] + '-0' + NumMade;
+    else
+      return inData['ContractNum'] + '-' + NumMade;
+  }
+  if (NumConfirm == 1)
+  {
+    if (NumMade<10)
+      return 'D' + inData['ContractNum'] + '-0' + NumMade;
+    else
+      return 'D' + inData['ContractNum'] + '-' + NumMade;
+  }
+  if (NumConfirm > 1)
+  {
+    if (NumMade<10)
+      return 'D' + inData['ContractNum'] + '-0' + NumMade + '/' + NumConfirm;
+    else
+      return 'D' + inData['ContractNum'] + '-' + NumMade + '/' + NumConfirm;
+  }
+}
+
+function FloatPart (inData)
+{
+  if(inData.indexOf('.') != -1)
+    return inData.slice(inData.indexOf('.')+1, inData.indexOf('.')+3);
+  else
+    return '00';
+}
+
+function IntegerPart(inData)
+{
+  if (inData.indexOf('.') != -1)
+    inData = inData.slice(0, inData.indexOf('.'));
+  var Begining = inData + ' (';
+  var pos = 0;
+  var Words = TextSum(inData);
+  return Begining + Words + ')';  
+}
+
+function TextSum(inData)
+{
+  var words = '';
+  var digits;
+  var edthousands = ['одна', 'две', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+  var ed = ['один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять'];
+  var seconddes = ['десять', 'одиннадцать', 'двенадцать', 'тринадцать', 'четырнадцать', 
+
+'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+  var des = ['двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 
+
+'восемьдесят', 'девяносто'];
+  var sot = ['сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 
+
+'девятьсот'];
+  var thousands = ['тысяча', 'тысячи', 'тысяч'];
+  var millions = ['миллион', 'миллиона', 'миллионов'];
+  
+  if ((inData>99) && ((inData/100>>0) % 10) != 0) words = sot[((inData/100>>0) % 10)-1];
+  if (((inData/10)>>0) %10 != 1)
+  {
+    if (((inData/10)>>0) %10 != 0)
+      words += ' ' + des[((inData/10)>>0) %10 - 2];
+    if (inData%10 !=0 )
+      words += ' ' + ed[inData%10-1];
+  }
+  else
+    words += ' ' + seconddes[inData%10];
+  
+  if(words.indexOf(' ') == 0)
+  words = words.slice(1);
+ 
+  var twords = '';
+  
+  inData = ((inData/1000)>>0);
+  if (inData == 0) return words;
+
+  if (inData>99)
+    twords = sot[(inData/100>>0) % 10 - 1];
+
+  if ((inData/10>>0) %10 == 1)
+    twords += ' ' + seconddes[inData%10] + ' ' + thousands[2];
+  else
+  {
+    if ((inData/10>>0) %10 != 0)
+      twords += ' ' + des[(inData/10>>0) %10 - 2];
+    switch(inData%10)
+      {
+        case 1: twords += ' ' + edthousands[inData%10-1] + ' ' + thousands[0]; break;
+        case 2: case 3: case 4: twords += ' ' + edthousands[inData%10-1] + ' ' + thousands[1]; 
+
+break;
+        case 5: case 6: case 7: case 8: case 9: twords += ' ' + edthousands[inData%10-1] + ' ' + 
+
+thousands[2]; break;
+        case 0: twords += ' ' + thousands[2]; break;
+      }
+   }
+  
+  if(twords.indexOf(' ') == 0)
+    twords = twords.slice(1);
+  return twords + ' ' + words;
+}
+
+function FinancesWord(inData, basis, ends)
+{
+  if ((inData/10>>0) %10 == 1)
+    return basis + ends[2];
+  else
+    switch (inData%10)
+    {
+      case 1: return basis + ends[0]; break;
+      case 2: case 3: case 4: return basis + ends[1]; break;
+      case 5: case 6: case 7: case 8: case 9: case 0: return basis + ends[2]; break;
+    }
+}
+
+function CheckFileExist(inFile, folder)
+{
+  var file = FindFiles(inFile, folder);
+  if (file)
+  {
+    if (Browser.msgBox('Замена файла', 'Файл ' + inFile + ' уже существует. Хотите заменить? Старый файл будет перемещен в корзину.', Browser.Buttons.YES_NO) == 'yes')
+    {
+      for (i=0; i<file.length; i++)
+      {
+        DocsList.getFileById(file[i]).setTrashed(true);
+      }
+      return true;
+    }
+    else return false;
+  }
+  return true;  
+}
+
+function FindFiles(inFile, folder) {
+  var files = DocsList.getFolder(folder).getFiles();
+  var fileID = new Array();
+  var flag = false;
+  
+  for (i=0; i< files.length; i++)
+  {
+    if (files[i].getName() == inFile)
+    {
+      flag = true;
+      fileID.push(files[i].getId());
+    }
+  }
+  if (flag)
+    return fileID;
+  else
+    return false;
+}
