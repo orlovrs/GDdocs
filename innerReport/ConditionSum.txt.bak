@@ -1,0 +1,18 @@
+﻿function gensum(range, dates, sumrange, status, month)
+{
+  if (month.length == 1) month = '0' + month;
+  var sum = 0;
+  
+  for (i=0; i<range.length; i++)
+  {
+    if (dates[i] == undefined) continue;
+    var date = new Date(dates[i].toString());
+    var mon = date.getMonth() + 1;
+    
+    if (mon.length == 1) mon = '0' + mon;
+    if (mon != month) continue;
+    if (range[i].toString().toLowerCase() == status.toLowerCase())
+      sum += +sumrange[i];
+  }
+  return sum;
+}
