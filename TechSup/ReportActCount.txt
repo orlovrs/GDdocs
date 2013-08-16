@@ -81,9 +81,6 @@ function generateAct_() {
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
   
-  if (Browser.msgBox('Вопрос', 'Вы хотите увеличить количество сгенерированных актов?', Browser.Buttons.YES_NO) == 'yes')
-    SpreadsheetApp.getActiveSpreadsheet().getRange('b7').setValue(SpreadsheetApp.getActiveSpreadsheet().getRange('b7').getValue()+1);
-  
   var thisFileId = SpreadsheetApp.getActive().getId();
   var thisFile = DocsList.getFileById(thisFileId);
   var parentFolder = thisFile.getParents()[0].getName();
@@ -126,9 +123,6 @@ function generateCount_()
     return false;
   
   InputAr = getProjectData(InputAr);
-  
-  if (Browser.msgBox('Вопрос', 'Вы хотите увеличить количество сгенерированных актов?', Browser.Buttons.YES_NO) == 'yes')
-    SpreadsheetApp.getActiveSpreadsheet().getRange('b7').setValue(SpreadsheetApp.getActiveSpreadsheet().getRange('b7').getValue()+1);
   
   InputAr['Sum'] = InputAr['Datas'][0][7].toString();
   
@@ -189,7 +183,7 @@ function generateAll_()
   if (!InputAr['Date'])
     return false;
   
-  InputAr = getProjectData(InputAr, true);
+  InputAr = getProjectData(InputAr);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
   var thisFile = DocsList.getFileById(thisFileId);
@@ -256,7 +250,7 @@ function generateAll_()
   Browser.msgBox('Скрипт успешно выполнен, спасибо за ожидание и за то, что вы до сих пор с нами :)');
 }
 
-function getProjectData(InputAr, encrease)
+function getProjectData(InputAr)
 {
   var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
   var data = StaticData.getDataRange().getValues();
@@ -274,14 +268,12 @@ function getProjectData(InputAr, encrease)
   
   InputAr['ReportName']+=InputAr['CompanyName'];
   
-  InputAr['ActNum'] = ActNumForm(InputAr, data[5][1], data[6][1]);
-  InputAr['Director'] = data[7][1];
-  InputAr['ShortDirectorName'] = data[8][1];
+  InputAr['ActNum'] = ActNumForm(InputAr, data[5]);
+  InputAr['Director'] = data[6][1];
+  InputAr['ShortDirectorName'] = data[7][1];
   
-  InputAr['WorkName'] = data[9][1] + ' за ' + InputAr['DocName'].toLowerCase()+'г.';
+  InputAr['WorkName'] = data[8][1] + ' за ' + InputAr['DocName'].toLowerCase()+'г.';
   
-  if (encrease)
-    SpreadsheetApp.getActiveSpreadsheet().getRange('b7').setValue(SpreadsheetApp.getActiveSpreadsheet().getRange('b7').getValue()+1);
   return InputAr;
 }
 
@@ -465,28 +457,63 @@ function ContractDateForm(inData)
   }
 }
 
-function ActNumForm(inData, NumConfirm, NumMade)
+function ActNumForm(inData, NumConfirm)
 {
-  if (NumConfirm == 0)
+  var realYear = inData['DocName'].slice(inData['DocName'].indexOf(' ')+1);
+  var realMon = '';
+  switch (inData['DocName'].slice(0,inData['DocName'].indexOf(' ')).toLowerCase())
   {
-    if (NumMade<10)
-      return inData['ContractNum'] + '-0' + NumMade;
-    else
-      return inData['ContractNum'] + '-' + NumMade;
+    case 'январь': realMon = 1; break;
+    case  'Февраль': realMon = 2; break;
+    case  'март': realMon = 3; break;
+    case  'апрель': realMon = 4; break;
+    case  'май': realMon = 5; break;
+    case  'июнь': realMon = 6; break;
+    case  'июль': realMon = 7; break;
+    case  'август': realMon = 8; break;
+    case  'сентябрь': realMon = 9; break;
+    case  'октябрь': realMon = 10; break;
+    case  'ноябрь': realMon = 11; break;
+    case  'декабрь': realMon = 12; break;
+    default: return false;
   }
-  if (NumConfirm == 1)
+  
+  var Year = '';
+  var Mon = '';
+  var num = 0;
+  for (i=1; i<NumConfirm.length; i++)
   {
-    if (NumMade<10)
-      return 'D' + inData['ContractNum'] + '-0' + NumMade;
+    if ((NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<=realYear) && (NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'))<=realMon))
+    {
+      Mon = NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'));
+      Year = NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1);
+      num = i;
+      continue;
+    }
     else
-      return 'D' + inData['ContractNum'] + '-' + NumMade;
+      break;
   }
-  if (NumConfirm > 1)
+  
+  if (num == 0)
   {
-    if (NumMade<10)
-      return 'D' + inData['ContractNum'] + '-0' + NumMade + '/' + NumConfirm;
+    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
+      return inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1);
     else
-      return 'D' + inData['ContractNum'] + '-' + NumMade + '/' + NumConfirm;
+      return inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1);
+  }
+  if (num == 1)
+  {
+    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
+      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1);
+    else
+      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1);
+  }
+  if (num > 1)
+  {
+    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
+      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1) + '/' + num;
+    else
+      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1) + '/' + num;
   }
 }
 
