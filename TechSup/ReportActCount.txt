@@ -146,17 +146,19 @@ function generateCount_()
   InputAr['TextSum'] = InputAr['TextSum'].charAt(0).toUpperCase() + InputAr['TextSum'].substr(1);
   
   var doc = CreateNewSpread('0ApegwE1puQiVdDJwZ3JHanNCOXZTNEp1ak1zSFgxdkE', InputAr['ReportName']);
+  
   FillSpread(doc, InputAr);
   
   doc.insertRowAfter(17);
-  
-  doc.getDataRange().getCell(18, 2).setValue(1);
+  doc.getDataRange().getCell(18, 2).setValue('1');
   doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']);
   doc.getDataRange().getCell(18, 5).setValue('шт');
-  doc.getDataRange().getCell(18, 6).setValue(1);
-  doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum']);
-  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum']);
+  doc.getDataRange().getCell(18, 6).setValue('1');
+  doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
+  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
   
+  doc.getRange("B18:G18").setBorder(true, true, true, true, true, true);
+  doc.getRange('C18:D18').merge();
   
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
 }
@@ -235,8 +237,11 @@ function generateAll_()
   doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']);
   doc.getDataRange().getCell(18, 5).setValue('шт');
   doc.getDataRange().getCell(18, 6).setValue(1);
-  doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum']);
-  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum']);
+  doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
+  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
+  
+  doc.getRange("B18:G18").setBorder(true, true, true, true, true, true);
+  doc.getRange('C18:D18').merge();
   
   InputAr['ReportName'] = 'Акт_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.' + InputAr['CompanyName'];
   
@@ -268,11 +273,11 @@ function getProjectData(InputAr)
   
   InputAr['ReportName']+=InputAr['CompanyName'];
   
-  InputAr['ActNum'] = ActNumForm(InputAr, data[5]);
-  InputAr['Director'] = data[6][1];
-  InputAr['ShortDirectorName'] = data[7][1];
+  InputAr['ActNum'] = ActNumForm(InputAr, data[5], data[6]);
+  InputAr['Director'] = data[7][1];
+  InputAr['ShortDirectorName'] = data[8][1];
   
-  InputAr['WorkName'] = data[8][1] + ' за ' + InputAr['DocName'].toLowerCase()+'г.';
+  InputAr['WorkName'] = data[9][1] + ' за ' + InputAr['DocName'].toLowerCase()+'г.';
   
   return InputAr;
 }
@@ -319,7 +324,11 @@ function CreateNewSpread(ID, docName) {
 }
 
 function FillTemplate(inDoc, inData) {
- 
+  
+  var style = {};
+  style[DocumentApp.Attribute.HORIZONTAL_ALIGNMENT] =
+     DocumentApp.HorizontalAlignment.CENTER;
+  
   //Replace masks
   for (var key in inData)
     if (key == 'Datas') continue;
@@ -327,20 +336,37 @@ function FillTemplate(inDoc, inData) {
     inDoc.replaceText('<'+key+'>', inData[key]);
   
    //get first table in document
-  var table = inDoc.getTables()[0];  
+  var table = '';
+  if (inDoc.getTables().length == 2)
+    table = inDoc.getTables()[0];
+  else
+    table = undefined;
+
   var sum = 0;
   
+  var index = 1;
+  
   for (i=0; i< inData['Datas'].length; i++) {
-    var row = table.insertTableRow(i+1);
-    row.appendTableCell(inData['Datas'][i][0]);
-    row.appendTableCell(inData['Datas'][i][1]);
-    row.appendTableCell(inData['Datas'][i][2]);
-    row.appendTableCell(inData['Datas'][i][3]);
-    row.appendTableCell(inData['Datas'][i][4]);
+    if (table != undefined)
+    {
+      if (inData['Datas'][i][1] == '')
+        continue;
+      var row = table.insertTableRow(index);
+      //row.setAttributes(style);
+      row.appendTableCell(inData['Datas'][i][0]);
+      row.appendTableCell(inData['Datas'][i][1]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      row.appendTableCell(inData['Datas'][i][2]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      row.appendTableCell(inData['Datas'][i][3]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      row.appendTableCell(inData['Datas'][i][4]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      index++;
+    }
     sum += +inData['Datas'][i][4];
   }
   
-  table.getCell(inData['Datas'].length + 1, 4).setText(sum);
+  if (table != undefined)
+  {
+    table.getCell(index, 4).setText(sum);
+  }
   curDoc.saveAndClose();
  }
 
@@ -457,10 +483,11 @@ function ContractDateForm(inData)
   }
 }
 
-function ActNumForm(inData, NumConfirm)
+function ActNumForm(inData, NumConfirm, NumNotGen)
 {
   var realYear = inData['DocName'].slice(inData['DocName'].indexOf(' ')+1);
   var realMon = '';
+  
   switch (inData['DocName'].slice(0,inData['DocName'].indexOf(' ')).toLowerCase())
   {
     case 'январь': realMon = 1; break;
@@ -478,42 +505,55 @@ function ActNumForm(inData, NumConfirm)
     default: return false;
   }
   
-  var Year = '';
-  var Mon = '';
   var num = 0;
+  var Mon = null;
+  var Year = null;
+  
   for (i=1; i<NumConfirm.length; i++)
   {
+    if (NumConfirm[i] == '') continue;
     if ((NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<=realYear) && (NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'))<=realMon))
     {
       Mon = NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'));
       Year = NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1);
       num = i;
-      continue;
     }
     else
       break;
   }
   
+  var numNot = 0;
+  
+  for (i=1; i<NumNotGen.length; i++)
+  {
+    var YearNot = NumNotGen[i].toString().slice(NumNotGen[i].toString().indexOf('.')+1);
+    var MonNot = NumNotGen[i].toString().slice(0, NumNotGen[i].toString().indexOf('.'));
+    if ((YearNot<=realYear) && (MonNot<realMon) && (YearNot>=Year) && (MonNot>=Mon))
+    {
+      numNot++;
+    }
+  }
+  
   if (num == 0)
   {
-    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
-      return inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1);
+    if (((realYear-Year)*12+(realMon-Mon)+1-numNot)<10)
+      return inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1-numNot);
     else
-      return inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1);
+      return inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1-numNot);
   }
   if (num == 1)
   {
-    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
-      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1);
+    if (((realYear-Year)*12+(realMon-Mon)+1-numNot)<10)
+      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1-numNot);
     else
-      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1);
+      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1-numNot);
   }
   if (num > 1)
   {
-    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
-      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1) + '/' + num;
+    if (((realYear-Year)*12+(realMon-Mon)+1-numNot)<10)
+      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1-numNot) + '/' + num;
     else
-      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1) + '/' + num;
+      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1-numNot) + '/' + num;
   }
 }
 

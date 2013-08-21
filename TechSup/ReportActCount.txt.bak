@@ -21,21 +21,7 @@ function generateReport_() {
   if (!InputAr['Date'])
     return false;
   
-  var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
-  var data = StaticData.getDataRange().getValues();
-  
-  InputAr['ContractNum'] = data[0][1];
-  
-  InputAr['ContractDate'] = data[1][1];
-  InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
-  if (!InputAr['ContractDate'])
-    return false;
-  
-  InputAr['CompanyName'] = data[2][1];
-  InputAr['FullManagerName'] = data[3][1];
-  InputAr['FullClientName'] = data[4][1];
-  
-  InputAr['ReportName']+=InputAr['CompanyName'];
+  InputAr = getProjectData(InputAr);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
   var thisFile = DocsList.getFileById(thisFileId);
@@ -88,31 +74,12 @@ function generateAct_() {
   if (!InputAr['LastDay'])
     return false;
   
-  var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
-  var data = StaticData.getDataRange().getValues();
-  
-  InputAr['ContractNum'] = data[0][1];
-  
-  InputAr['ContractDate'] = data[1][1];
-  InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
-  if (!InputAr['ContractDate'])
-    return false;
-  
-  InputAr['CompanyName'] = data[2][1];
-  InputAr['FullManagerName'] = data[3][1];
-  InputAr['FullClientName'] = data[4][1];
-  
-  InputAr['ActNum'] = ActNumForm(InputAr, data[5][1], data[6][1]);
-  SpreadsheetApp.getActiveSpreadsheet().getRange('b7').setValue(SpreadsheetApp.getActiveSpreadsheet().getRange('b7').getValue()+1);
-  InputAr['Director'] = data[7][1];
-  InputAr['ShortDirectorName'] = data[8][1];
+  InputAr = getProjectData(InputAr);
   
   InputAr['Sum'] = InputAr['Datas'][0][7].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
-    
-  InputAr['ReportName']+=InputAr['CompanyName'];
   
   var thisFileId = SpreadsheetApp.getActive().getId();
   var thisFile = DocsList.getFileById(thisFileId);
@@ -155,32 +122,12 @@ function generateCount_()
   if (!InputAr['LastDay'])
     return false;
   
-  var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
-  var data = StaticData.getDataRange().getValues();
-  
-  InputAr['ContractNum'] = data[0][1];
-  
-  InputAr['ContractDate'] = data[1][1];
-  InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
-  if (!InputAr['ContractDate'])
-    return false;
-  
-  InputAr['CompanyName'] = data[2][1];
-  InputAr['FullManagerName'] = data[3][1];
-  InputAr['FullClientName'] = data[4][1];
-  
-  InputAr['ActNum'] = ActNumForm(InputAr, data[5][1], data[6][1]);
-  InputAr['Director'] = data[7][1];
-  InputAr['ShortDirectorName'] = data[8][1];
-  
-  InputAr['WorkName'] = data[9][1];
+  InputAr = getProjectData(InputAr);
   
   InputAr['Sum'] = InputAr['Datas'][0][7].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
-    
-  InputAr['ReportName']+=InputAr['CompanyName'];
   
   var thisFileId = SpreadsheetApp.getActive().getId();
   var thisFile = DocsList.getFileById(thisFileId);
@@ -200,7 +147,7 @@ function generateCount_()
   
   var doc = CreateNewSpread('0ApegwE1puQiVdDJwZ3JHanNCOXZTNEp1ak1zSFgxdkE', InputAr['ReportName']);
   FillSpread(doc, InputAr);
-  //SpreadsheetApp.getActiveSpreadsheet().getDataRange().getCell(row, column)
+  
   doc.insertRowAfter(17);
   
   doc.getDataRange().getCell(18, 2).setValue(1);
@@ -214,6 +161,122 @@ function generateCount_()
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
 }
 
+function generateAll_()
+{
+  var InputAr = new Array();
+  
+  var Tasks = ReadBaseData();
+  InputAr['Datas'] = Tasks;
+  
+  var spreadsheet = SpreadsheetApp.getActive();
+  InputAr['DocName'] = SpreadsheetApp.getActive().getSheetName(); //Запоминаем имя текущего листа  
+  
+  if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать все документы за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
+    return false;
+  
+  dt = new Date();
+  InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
+  InputAr['DateDoc'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
+  InputAr['ReportName'] = 'Отчет_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.';
+  
+  InputAr['Date'] = ReportPeriodForm(InputAr['DateDoc'], InputAr['Year']);
+  if (!InputAr['Date'])
+    return false;
+  
+  InputAr = getProjectData(InputAr);
+  
+  var thisFileId = SpreadsheetApp.getActive().getId();
+  var thisFile = DocsList.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents()[0].getName();
+  
+  if (!CheckFileExist(InputAr['ReportName'], parentFolder))
+    return false;
+  
+  InputAr['ShortClientName'] = FullIntoShortName(InputAr['FullClientName']);
+  InputAr['ShortManagerName'] = FullIntoShortName(InputAr['FullManagerName']);
+  
+  InputAr['FullCompanyName'] = FullCompanyNameForm(InputAr['CompanyName']);
+    if (!InputAr['FullCompanyName'])
+    {
+      Browser.msgBox('Отсутствует расшифровка такому типу организации заказчика! Приложение завершает работу');
+      return false;
+    }
+  
+  var doc = CreateNewDoc('1mMIRmFfGUc2iIRWmbAQFSLBvqZKMookA61qcVvCEuJE',InputAr['ReportName']);
+  FillTemplate(doc, InputAr);
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
+  
+  InputAr['ReportName'] = 'Счет_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.' + InputAr['CompanyName'];
+  
+  InputAr['LastDay'] = InputAr['Date'].slice(InputAr['Date'].indexOf('-')+2);
+  if (!InputAr['LastDay'])
+    return false;
+  
+  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  
+  InputAr['Float'] = FloatPart(InputAr['Sum']);
+  InputAr['Integer'] = IntegerPart(InputAr['Sum']);
+  
+  if (!CheckFileExist(InputAr['ReportName'], parentFolder))
+    return false;
+  
+  InputAr['WorksNum'] = 1;
+  InputAr['Rubles'] = FinancesWord(InputAr['Sum'], 'рубл', ['ь', 'я', 'ей']);
+  InputAr['Copies'] = FinancesWord(InputAr['Sum'], 'копе', ['йка', 'йки', 'ек']);
+  InputAr['TextSum'] = TextSum(InputAr['Sum']);
+  InputAr['TextSum'] = InputAr['TextSum'].charAt(0).toUpperCase() + InputAr['TextSum'].substr(1);
+  
+  var doc = CreateNewSpread('0ApegwE1puQiVdDJwZ3JHanNCOXZTNEp1ak1zSFgxdkE', InputAr['ReportName']);
+  FillSpread(doc, InputAr);
+  
+  doc.insertRowAfter(17);
+  
+  doc.getDataRange().getCell(18, 2).setValue(1);
+  doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']);
+  doc.getDataRange().getCell(18, 5).setValue('шт');
+  doc.getDataRange().getCell(18, 6).setValue(1);
+  doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum']);
+  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum']);
+  
+  InputAr['ReportName'] = 'Акт_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.' + InputAr['CompanyName'];
+  
+  if (!CheckFileExist(InputAr['ReportName'], parentFolder))
+    return false;
+  
+  var doc = CreateNewDoc('1bGeC4CEyTP_AUV6z2Fx5q7pImdI4KY2kyiv7dCvf93Q', InputAr['ReportName']);
+  FillTemplate(doc, InputAr);
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
+  
+  Browser.msgBox('Скрипт успешно выполнен, спасибо за ожидание и за то, что вы до сих пор с нами :)');
+}
+
+function getProjectData(InputAr)
+{
+  var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
+  var data = StaticData.getDataRange().getValues();
+  
+  InputAr['ContractNum'] = data[0][1];
+  
+  InputAr['ContractDate'] = data[1][1];
+  InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
+  if (!InputAr['ContractDate'])
+    return false;
+  
+  InputAr['CompanyName'] = data[2][1];
+  InputAr['FullManagerName'] = data[3][1];
+  InputAr['FullClientName'] = data[4][1];
+  
+  InputAr['ReportName']+=InputAr['CompanyName'];
+  
+  InputAr['ActNum'] = ActNumForm(InputAr, data[5]);
+  InputAr['Director'] = data[6][1];
+  InputAr['ShortDirectorName'] = data[7][1];
+  
+  InputAr['WorkName'] = data[8][1] + ' за ' + InputAr['DocName'].toLowerCase()+'г.';
+  
+  return InputAr;
+}
+
 /**
  * A special function that runs when the spreadsheet is open, used to add a
  * custom menu to the spreadsheet.
@@ -223,7 +286,8 @@ function onOpen() {
   var menuItems = [
     {name: 'Сгенерировать отчет...', functionName: 'generateReport_'},
     {name: 'Сгенерировать акт...', functionName: 'generateAct_'},
-    {name: 'Сгенерировать счет...', functionName: 'generateCount_'}
+    {name: 'Сгенерировать счет...', functionName: 'generateCount_'},
+    {name: 'Сгенерировать все документы...', functionName: 'generateAll_'}
   ];
   spreadsheet.addMenu('Отчет', menuItems);
 }
@@ -393,28 +457,63 @@ function ContractDateForm(inData)
   }
 }
 
-function ActNumForm(inData, NumConfirm, NumMade)
+function ActNumForm(inData, NumConfirm)
 {
-  if (NumConfirm == 0)
+  var realYear = inData['DocName'].slice(inData['DocName'].indexOf(' ')+1);
+  var realMon = '';
+  switch (inData['DocName'].slice(0,inData['DocName'].indexOf(' ')).toLowerCase())
   {
-    if (NumMade<10)
-      return inData['ContractNum'] + '-0' + NumMade;
-    else
-      return inData['ContractNum'] + '-' + NumMade;
+    case 'январь': realMon = 1; break;
+    case  'Февраль': realMon = 2; break;
+    case  'март': realMon = 3; break;
+    case  'апрель': realMon = 4; break;
+    case  'май': realMon = 5; break;
+    case  'июнь': realMon = 6; break;
+    case  'июль': realMon = 7; break;
+    case  'август': realMon = 8; break;
+    case  'сентябрь': realMon = 9; break;
+    case  'октябрь': realMon = 10; break;
+    case  'ноябрь': realMon = 11; break;
+    case  'декабрь': realMon = 12; break;
+    default: return false;
   }
-  if (NumConfirm == 1)
+  
+  var Year = '';
+  var Mon = '';
+  var num = 0;
+  for (i=1; i<NumConfirm.length; i++)
   {
-    if (NumMade<10)
-      return 'D' + inData['ContractNum'] + '-0' + NumMade;
+    if ((NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<=realYear) && (NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'))<=realMon))
+    {
+      Mon = NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'));
+      Year = NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1);
+      num = i;
+      continue;
+    }
     else
-      return 'D' + inData['ContractNum'] + '-' + NumMade;
+      break;
   }
-  if (NumConfirm > 1)
+  
+  if (num == 0)
   {
-    if (NumMade<10)
-      return 'D' + inData['ContractNum'] + '-0' + NumMade + '/' + NumConfirm;
+    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
+      return inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1);
     else
-      return 'D' + inData['ContractNum'] + '-' + NumMade + '/' + NumConfirm;
+      return inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1);
+  }
+  if (num == 1)
+  {
+    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
+      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1);
+    else
+      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1);
+  }
+  if (num > 1)
+  {
+    if (((realYear-Year)*12+(realMon-Mon)+1)<10)
+      return 'D' + inData['ContractNum'] + '-0' + ((realYear-Year)*12+(realMon-Mon)+1) + '/' + num;
+    else
+      return 'D' + inData['ContractNum'] + '-' + ((realYear-Year)*12+(realMon-Mon)+1) + '/' + num;
   }
 }
 
