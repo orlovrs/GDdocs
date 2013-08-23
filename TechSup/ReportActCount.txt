@@ -150,12 +150,12 @@ function generateCount_()
   FillSpread(doc, InputAr);
   
   doc.insertRowAfter(17);
-  doc.getDataRange().getCell(18, 2).setValue('1');
-  doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']);
-  doc.getDataRange().getCell(18, 5).setValue('шт');
+  doc.getDataRange().getCell(18, 2).setValue('1').setVerticalAlignment("top");
+  doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']).setVerticalAlignment("top");
+  doc.getDataRange().getCell(18, 5).setValue('шт').setHorizontalAlignment("center");
   doc.getDataRange().getCell(18, 6).setValue('1');
   doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
-  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
+  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00").setVerticalAlignment("bottom");
   
   doc.getRange("B18:G18").setBorder(true, true, true, true, true, true);
   doc.getRange('C18:D18').merge();
@@ -233,12 +233,12 @@ function generateAll_()
   
   doc.insertRowAfter(17);
   
-  doc.getDataRange().getCell(18, 2).setValue(1);
-  doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']);
-  doc.getDataRange().getCell(18, 5).setValue('шт');
+  doc.getDataRange().getCell(18, 2).setValue(1).setVerticalAlignment("top");
+  doc.getDataRange().getCell(18, 3).setValue(InputAr['WorkName']).setVerticalAlignment("top");
+  doc.getDataRange().getCell(18, 5).setValue('шт').setHorizontalAlignment("center");
   doc.getDataRange().getCell(18, 6).setValue(1);
   doc.getDataRange().getCell(18, 7).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
-  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00");
+  doc.getDataRange().getCell(18, 8).setValue(InputAr['Sum'] + '.' + InputAr['Float']).setNumberFormat("0.00").setVerticalAlignment("bottom");
   
   doc.getRange("B18:G18").setBorder(true, true, true, true, true, true);
   doc.getRange('C18:D18').merge();
