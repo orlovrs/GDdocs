@@ -40,7 +40,7 @@ function generateReport_() {
       return false;
     }
   
-  var doc = CreateNewDoc('1mMIRmFfGUc2iIRWmbAQFSLBvqZKMookA61qcVvCEuJE',InputAr['ReportName']);
+  var doc = CreateNewDoc('1rqX3mjpF7bKEXki9gvZK7fF0ACsxiXZBQ7MWYbwPhZE',InputAr['ReportName']);
   FillTemplate(doc, InputAr);
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
   
@@ -76,7 +76,7 @@ function generateAct_() {
   
   InputAr = getProjectData(InputAr);
   
-  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  InputAr['Sum'] = InputAr['Datas'][0][8].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
@@ -124,7 +124,7 @@ function generateCount_()
   
   InputAr = getProjectData(InputAr);
   
-  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  InputAr['Sum'] = InputAr['Datas'][0][8].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
@@ -204,7 +204,7 @@ function generateAll_()
       return false;
     }
   
-  var doc = CreateNewDoc('1mMIRmFfGUc2iIRWmbAQFSLBvqZKMookA61qcVvCEuJE',InputAr['ReportName']);
+  var doc = CreateNewDoc('1rqX3mjpF7bKEXki9gvZK7fF0ACsxiXZBQ7MWYbwPhZE',InputAr['ReportName']);
   FillTemplate(doc, InputAr);
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
   
@@ -214,7 +214,7 @@ function generateAll_()
   if (!InputAr['LastDay'])
     return false;
   
-  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  InputAr['Sum'] = InputAr['Datas'][0][8].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
@@ -263,6 +263,7 @@ function getProjectData(InputAr)
   InputAr['ContractNum'] = data[0][1];
   
   InputAr['ContractDate'] = data[1][1];
+  InputAr['ContractConfirm'] = InputAr['ContractDate'];
   InputAr['ContractDate'] = ContractDateForm(InputAr['ContractDate']);
   if (!InputAr['ContractDate'])
     return false;
@@ -355,6 +356,7 @@ function FillTemplate(inDoc, inData) {
       //row.setAttributes(style);
       row.appendTableCell(inData['Datas'][i][0]);
       row.appendTableCell(inData['Datas'][i][1]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      row.appendTableCell(inData['Datas'][i][5]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
       row.appendTableCell(inData['Datas'][i][2]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
       row.appendTableCell(inData['Datas'][i][3]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
       row.appendTableCell(inData['Datas'][i][4]).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
@@ -365,7 +367,7 @@ function FillTemplate(inDoc, inData) {
   
   if (table != undefined)
   {
-    table.getCell(index, 4).setText(sum);
+    table.getCell(index, 5).setText(sum);
   }
   curDoc.saveAndClose();
  }
@@ -506,11 +508,12 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   }
   
   var num = 0;
-  var Mon = null;
-  var Year = null;
+  var Mon = inData['ContractConfirm'].toString().slice(inData['ContractConfirm'].toString().indexOf('.')+1, inData['ContractConfirm'].toString().lastIndexOf('.'));
+  var Year = inData['ContractConfirm'].toString().slice(inData['ContractConfirm'].toString().lastIndexOf('.')+1);
   
   for (i=1; i<NumConfirm.length; i++)
   {
+    Browser.msgBox(NumConfirm[i]);
     if (NumConfirm[i] == '') continue;
     if ((NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<=realYear) && (NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'))<=realMon))
     {
@@ -526,6 +529,7 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   
   for (i=1; i<NumNotGen.length; i++)
   {
+    if (NumNotGen[i] == '') continue;
     var YearNot = NumNotGen[i].toString().slice(NumNotGen[i].toString().indexOf('.')+1);
     var MonNot = NumNotGen[i].toString().slice(0, NumNotGen[i].toString().indexOf('.'));
     if ((YearNot<=realYear) && (MonNot<realMon) && (YearNot>=Year) && (MonNot>=Mon))

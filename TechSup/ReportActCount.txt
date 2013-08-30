@@ -506,11 +506,12 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   }
   
   var num = 0;
-  var Mon = null;
-  var Year = null;
+  var Mon = inData['ContractConfirm'].toString().slice(inData['ContractConfirm'].toString().indexOf('.')+1, inData['ContractConfirm'].toString().lastIndexOf('.'));
+  var Year = inData['ContractConfirm'].toString().slice(inData['ContractConfirm'].toString().lastIndexOf('.')+1);
   
   for (i=1; i<NumConfirm.length; i++)
   {
+    Browser.msgBox(NumConfirm[i]);
     if (NumConfirm[i] == '') continue;
     if ((NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<=realYear) && (NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'))<=realMon))
     {
@@ -526,6 +527,7 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   
   for (i=1; i<NumNotGen.length; i++)
   {
+    if (NumNotGen[i] == '') continue;
     var YearNot = NumNotGen[i].toString().slice(NumNotGen[i].toString().indexOf('.')+1);
     var MonNot = NumNotGen[i].toString().slice(0, NumNotGen[i].toString().indexOf('.'));
     if ((YearNot<=realYear) && (MonNot<realMon) && (YearNot>=Year) && (MonNot>=Mon))
