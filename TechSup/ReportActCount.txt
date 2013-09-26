@@ -15,7 +15,7 @@ function generateReport_() {
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = 'Отчет_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
+  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Отчет' + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -64,8 +64,8 @@ function generateAct_() {
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = 'Акт_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
-  
+  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Акт' + '.';
+    
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
     return false;
@@ -112,7 +112,7 @@ function generateCount_()
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = 'Счет_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
+  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Счет' + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -179,7 +179,7 @@ function generateAll_()
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['DateDoc'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = 'Отчет_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.';
+  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Отчет' + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['DateDoc'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -208,8 +208,8 @@ function generateAll_()
   FillTemplate(doc, InputAr);
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
   
-  InputAr['ReportName'] = 'Счет_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.' + InputAr['CompanyName'];
-  
+  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Счет' + '.' + InputAr['CompanyName'];
+    
   InputAr['LastDay'] = InputAr['Date'].slice(InputAr['Date'].indexOf('-')+2);
   if (!InputAr['LastDay'])
     return false;
@@ -243,7 +243,7 @@ function generateAll_()
   doc.getRange("B18:G18").setBorder(true, true, true, true, true, true);
   doc.getRange('C18:D18').merge();
   
-  InputAr['ReportName'] = 'Акт_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.' + InputAr['CompanyName'];
+  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Акт' + '.' + InputAr['CompanyName'];
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -506,12 +506,11 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   }
   
   var num = 0;
-  var Mon = inData['ContractConfirm'].toString().slice(inData['ContractConfirm'].toString().indexOf('.')+1, inData['ContractConfirm'].toString().lastIndexOf('.'));
-  var Year = inData['ContractConfirm'].toString().slice(inData['ContractConfirm'].toString().lastIndexOf('.')+1);
+  var Mon = null;
+  var Year = null;
   
   for (i=1; i<NumConfirm.length; i++)
   {
-    Browser.msgBox(NumConfirm[i]);
     if (NumConfirm[i] == '') continue;
     if ((NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<=realYear) && (NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'))<=realMon))
     {
@@ -527,7 +526,6 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   
   for (i=1; i<NumNotGen.length; i++)
   {
-    if (NumNotGen[i] == '') continue;
     var YearNot = NumNotGen[i].toString().slice(NumNotGen[i].toString().indexOf('.')+1);
     var MonNot = NumNotGen[i].toString().slice(0, NumNotGen[i].toString().indexOf('.'));
     if ((YearNot<=realYear) && (MonNot<realMon) && (YearNot>=Year) && (MonNot>=Mon))
