@@ -15,7 +15,7 @@ function generateReport_() {
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Отчет' + '.';
+  InputAr['ReportName'] = 'Отчет_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -64,7 +64,7 @@ function generateAct_() {
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Акт' + '.';
+  InputAr['ReportName'] = 'Акт_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -112,7 +112,7 @@ function generateCount_()
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Счет' + '.';
+  InputAr['ReportName'] = 'Счет_' + InputAr['Date'] + '.' + InputAr['Year'] + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -179,7 +179,7 @@ function generateAll_()
   dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['DateDoc'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Отчет' + '.';
+  InputAr['ReportName'] = 'Отчет_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['DateDoc'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -208,8 +208,8 @@ function generateAll_()
   FillTemplate(doc, InputAr);
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
   
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Счет' + '.' + InputAr['CompanyName'];
-    
+  InputAr['ReportName'] = 'Счет_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.' + InputAr['CompanyName'];
+  
   InputAr['LastDay'] = InputAr['Date'].slice(InputAr['Date'].indexOf('-')+2);
   if (!InputAr['LastDay'])
     return false;
@@ -243,8 +243,8 @@ function generateAll_()
   doc.getRange("B18:G18").setBorder(true, true, true, true, true, true);
   doc.getRange('C18:D18').merge();
   
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Акт' + '.' + InputAr['CompanyName'];
-    
+  InputAr['ReportName'] = 'Акт_' + InputAr['DateDoc'] + '.' + InputAr['Year'] + '.' + InputAr['CompanyName'];
+  
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
   
