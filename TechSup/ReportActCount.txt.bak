@@ -12,7 +12,6 @@ function generateReport_() {
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать отчет за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
   return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
   InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Отчет' + '.';
@@ -513,7 +512,6 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   for (i=1; i<NumConfirm.length; i++)
   {
     if (NumConfirm[i] == '') continue;
-    Browser.msgBox(NumConfirm[i]);
     if (NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<realYear)
     {
       Mon = NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'));

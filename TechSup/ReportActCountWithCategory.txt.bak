@@ -12,10 +12,9 @@ function generateReport_() {
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать отчет за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
   return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Отчет' + '.';
+  InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['Date']) + '.' + 'Отчет' + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -61,10 +60,9 @@ function generateAct_() {
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать акт за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
   return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Акт' + '.';
+  InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['Date']) + '.' + 'Акт' + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -109,10 +107,9 @@ function generateCount_()
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать счет за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
   return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['Date'] + '.' + 'Счет' + '.';
+  InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['Date']) + '.' + 'Счет' + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['Date'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -176,10 +173,9 @@ function generateAll_()
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать все документы за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
     return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['DateDoc'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Отчет' + '.';
+  InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['DateDoc']) + '.' + 'Отчет' + '.';
   
   InputAr['Date'] = ReportPeriodForm(InputAr['DateDoc'], InputAr['Year']);
   if (!InputAr['Date'])
@@ -208,7 +204,7 @@ function generateAll_()
   FillTemplate(doc, InputAr);
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
   
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Счет' + '.' + InputAr['CompanyName'];
+  InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['DateDoc']) + '.' + 'Счет' + '.' + InputAr['CompanyName'];
     
   InputAr['LastDay'] = InputAr['Date'].slice(InputAr['Date'].indexOf('-')+2);
   if (!InputAr['LastDay'])
@@ -243,7 +239,7 @@ function generateAll_()
   doc.getRange("B18:G18").setBorder(true, true, true, true, true, true);
   doc.getRange('C18:D18').merge();
   
-  InputAr['ReportName'] = InputAr['Year'] + '.' + InputAr['DateDoc'] + '.' + 'Акт' + '.' + InputAr['CompanyName'];
+  InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['DateDoc']) + '.' + 'Акт' + '.' + InputAr['CompanyName'];
     
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -448,6 +444,25 @@ function ReportPeriodForm(inMon, inYear)
       case 'октябрь' : return '1 октября ' + inYear + ' - 31 октября ' + inYear; break;
       case 'ноябрь' : return '1 ноября ' + inYear + ' - 30 ноября ' + inYear; break;
       case 'декабрь' : return '1 декабря ' + inYear + ' - 31 декабря ' + inYear; break;
+    default: Browser.msgBox('Ошибка', 'Проверьте дату в названии листа. Приложение завершает свою работу', Browser.Buttons.OK); return false;
+  }
+}
+
+function WordMonthToNum (inMon)
+{
+  switch (inMon) {
+      case 'январь' : return '01'; break;
+      case 'февраль' : return '02'; break;
+      case 'март' : return '03'; break;
+      case 'апрель' : return '04'; break;
+      case 'май' : return '05'; break;
+      case 'июнь' : return '06'; break;
+      case 'июль' : return '07'; break;
+      case 'август' : return '08'; break;
+      case 'сентябрь' : return '09'; break;
+      case 'октябрь' : return '10'; break;
+      case 'ноябрь' : return '11'; break;
+      case 'декабрь' : return '12'; break;
     default: Browser.msgBox('Ошибка', 'Проверьте дату в названии листа. Приложение завершает свою работу', Browser.Buttons.OK); return false;
   }
 }

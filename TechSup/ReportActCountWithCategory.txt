@@ -12,7 +12,6 @@ function generateReport_() {
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать отчет за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
   return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
   InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['Date']) + '.' + 'Отчет' + '.';
@@ -61,7 +60,6 @@ function generateAct_() {
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать акт за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
   return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
   InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['Date']) + '.' + 'Акт' + '.';
@@ -109,7 +107,6 @@ function generateCount_()
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать счет за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
   return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['Date'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
   InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['Date']) + '.' + 'Счет' + '.';
@@ -176,7 +173,6 @@ function generateAll_()
   if (Browser.msgBox('Вопрос', 'Вы действительно хотите сформировать все документы за '+InputAr['DocName'].toLowerCase(), Browser.Buttons.YES_NO) == 'no')
     return false;
   
-  dt = new Date();
   InputAr['Year'] = spreadsheet.getSheetName().slice(spreadsheet.getSheetName().indexOf(' ')+1);
   InputAr['DateDoc'] = spreadsheet.getSheetName().slice(0,spreadsheet.getSheetName().indexOf(' ')).toLowerCase();
   InputAr['ReportName'] = InputAr['Year'] + '.' + WordMonthToNum(InputAr['DateDoc']) + '.' + 'Отчет' + '.';
