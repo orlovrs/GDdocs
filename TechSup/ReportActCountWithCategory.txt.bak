@@ -251,6 +251,41 @@ function generateAll_()
   Browser.msgBox('Скрипт успешно выполнен, спасибо за ожидание и за то, что вы до сих пор с нами :)');
 }
 
+function AutoGenerateAll()
+{
+  var sheet = SpreadsheetApp.getActive().getSheets();
+  var lastReport = sheet[0].getName().toLowerCase();
+  
+  SpreadsheetApp.getActive().setActiveSheet(sheet[0]);
+  generateAll_();
+  
+  var header = sheet[0].getDataRange().getValues();
+  
+  var nextMon = lastReport.slice(0, lastReport.indexOf(" "));
+  var nextYear = lastReport.slice(lastReport.indexOf(" ") + 1);
+  
+  switch (nextMon)
+  {
+    case 'январь': nextMon = 'Февраль '; break;
+    case 'февраль': nextMon = 'Март '; break;
+    case 'март': nextMon = 'Апрель '; break;
+    case 'апрель': nextMon = 'Май '; break;
+    case 'май': nextMon = 'Июнь '; break;
+    case 'июнь': nextMon = 'Июль '; break;
+    case 'июль': nextMon = 'Август '; break;
+    case 'август': nextMon = 'Сентябрь '; break;
+    case 'сентябрь': nextMon = 'Октябрь '; break;
+    case 'октябрь': nextMon = 'Ноябрь '; break;
+    case 'ноябрь': nextMon = 'Декабрь '; break;
+    case 'декабрь': nextMon = 'Январь '; nextYear = +nextYear +1; break;
+    default: return false;
+  }
+  
+  var newSheet = SpreadsheetApp.getActive().insertSheet(nextMon + nextYear, 0);
+  SpreadsheetApp.getActive().setActiveSheet(newSheet);
+  newSheet.appendRow(header[0]);
+}
+
 function getProjectData(InputAr)
 {
   var StaticData = SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));

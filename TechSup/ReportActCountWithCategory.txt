@@ -559,23 +559,23 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   
   var num = 0;
   
-  var Mon = inData['ContractNum'].slice(inData['ContractNum'].indexOf('-')+1, inData['ContractNum'].lastIndexOf('-'));
-  var Year = inData['ContractNum'].slice(inData['ContractNum'].lastIndexOf('-')+1);
+  var Mon = parseInt(inData['ContractNum'].slice(inData['ContractNum'].indexOf('-')+1, inData['ContractNum'].lastIndexOf('-')));
+  var Year = parseInt(inData['ContractNum'].slice(inData['ContractNum'].lastIndexOf('-')+1));
   
   for (i=1; i<NumConfirm.length; i++)
   {
     if (NumConfirm[i] == '') continue;
-    if (NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)<realYear)
+    if (parseInt(NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1))<realYear)
     {
-      Mon = NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'));
-      Year = NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1);
+      Mon = parseInt(NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.')));
+      Year = parseInt(NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1));
       num = i;
     }
-    else if ((NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1) == realYear))
-      if (NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'))<=realMon)
+    else if (parseInt(NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1)) == realYear)
+      if (parseInt(NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.')))<=realMon)
       {
-        Mon = NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.'));
-        Year = NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1);
+        Mon = parseInt(NumConfirm[i].toString().slice(0, NumConfirm[i].toString().indexOf('.')));
+        Year = parseInt(NumConfirm[i].toString().slice(NumConfirm[i].toString().indexOf('.')+1));
         num = i;
       }
     else
@@ -589,8 +589,10 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
     if (NumNotGen[i] == '') continue;
     var YearNot = NumNotGen[i].toString().slice(NumNotGen[i].toString().indexOf('.')+1);
     var MonNot = NumNotGen[i].toString().slice(0, NumNotGen[i].toString().indexOf('.'));
-    if ((YearNot<=realYear) && (MonNot<realMon) && (YearNot>=Year) && (MonNot>=Mon))
+    
+    if (((YearNot<realYear) || ((YearNot == realYear) && (MonNot<realMon))) && ((YearNot>Year) || ((YearNot == Year) && (MonNot>=Mon))))
     {
+      Browser.msgBox(YearNot + " " + realYear + " " + MonNot + " " + realMon + " " + Year + " " + Mon);
       numNot++;
     }
   }
