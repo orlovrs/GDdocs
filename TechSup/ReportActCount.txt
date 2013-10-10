@@ -590,7 +590,6 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
     
     if (((YearNot<realYear) || ((YearNot == realYear) && (MonNot<realMon))) && ((YearNot>Year) || ((YearNot == Year) && (MonNot>=Mon))))
     {
-      Browser.msgBox(YearNot + " " + realYear + " " + MonNot + " " + realMon + " " + Year + " " + Mon);
       numNot++;
     }
   }
