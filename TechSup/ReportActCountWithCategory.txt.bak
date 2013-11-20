@@ -563,7 +563,6 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   if (Mon.charAt(0) == '0') Mon = parseInt(Mon.slice(1));
   var Year = parseInt(inData['ContractNum'].slice(inData['ContractNum'].lastIndexOf('-')+1));
   
-  Browser.msgBox(Mon + " " + Year);
   for (i=1; i<NumConfirm.length; i++)
   {
     if (NumConfirm[i] == '') continue;
