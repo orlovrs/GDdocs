@@ -74,7 +74,13 @@ function generateAct_() {
   
   InputAr = getProjectData(InputAr);
   
-  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  InputAr['Sum'] = 0;
+  for (i=0; i<InputAr['Datas'].length; i++)
+  {
+    if (InputAr['Datas'][i][7] != '')
+      InputAr['Sum'] += +InputAr['Datas'][i][7];
+  }
+  InputAr['Sum'] = InputAr['Sum'].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
@@ -121,7 +127,13 @@ function generateCount_()
   
   InputAr = getProjectData(InputAr);
   
-  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  InputAr['Sum'] = 0;
+  for (i=0; i<InputAr['Datas'].length; i++)
+  {
+    if (InputAr['Datas'][i][7] != '')
+      InputAr['Sum'] += +InputAr['Datas'][i][7];
+  }
+  InputAr['Sum'] = InputAr['Sum'].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
@@ -210,7 +222,13 @@ function generateAll_()
   if (!InputAr['LastDay'])
     return false;
   
-  InputAr['Sum'] = InputAr['Datas'][0][7].toString();
+  InputAr['Sum'] = 0;
+  for (i=0; i<InputAr['Datas'].length; i++)
+  {
+    if (InputAr['Datas'][i][7] != '')
+      InputAr['Sum'] += +InputAr['Datas'][i][7];
+  }
+  InputAr['Sum'] = InputAr['Sum'].toString();
   
   InputAr['Float'] = FloatPart(InputAr['Sum']);
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);

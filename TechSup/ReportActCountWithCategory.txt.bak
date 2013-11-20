@@ -381,6 +381,17 @@ function FillTemplate(inDoc, inData) {
   for (i=0; i< inData['Datas'].length; i++) {
     if (table != undefined)
     {
+	  if ((inData['Datas'][i][0] != '') && (inData['Datas'][i][1] == ''))
+      {
+        var row = table.insertTableRow(index);
+        index++;
+        row.appendTableCell(inData['Datas'][i][0]);
+        row.appendTableCell();
+        row.appendTableCell();
+        row.appendTableCell();
+        row.appendTableCell();
+        row.appendTableCell();        
+      }
       if (inData['Datas'][i][1] == '')
         continue;
       var row = table.insertTableRow(index);
