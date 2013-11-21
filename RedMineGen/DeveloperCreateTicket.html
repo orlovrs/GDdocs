@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://redmine.greensight.ru/" />
+<title>DeveloperCreateTicket</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">DeveloperCreateTicket</td></tr>
+</thead><tbody>
+<tr>
+	<td>storeLocation</td>
+	<td>link</td>
+	<td></td>
+</tr>
+<!--Чтение массива тикетов-->
+<tr>
+	<td>storeEval</td>
+	<td>'${link}'.slice('${link}'.lastIndexOf('/')+1)</td>
+	<td>num</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//h1</td>
+	<td>proj</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//div[@class='subject']//h3</td>
+	<td>title</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//td[@class='assigned-to']//a</td>
+	<td>user</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//div[@id='content']//h2</td>
+	<td>tracker</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>'${tracker}'.slice(0, '${tracker}'.indexOf(' '))</td>
+	<td>tracker</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>//p[@class='author']/a</td>
+	<td>author</td>
+</tr>
+<!--Трекер: Разработка, Дизайн, Управление, Дефект, Тестирование, Улучшение, Верстка-->
+<tr>
+	<td>store</td>
+	<td>Задачи для оценки</td>
+	<td>lane</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>if ('${proj}'=='Atego') 'Женя'; if ('${proj}'=='Electrolab.ru (гарантийная поддержка до 06.2014)') 'Паша'; if ('${proj}'=='Investcafe: django version') 'Паша'; if ('${proj}'=='lvbco.ru') '!Юля'; if ('${proj}'=='Wolford') '!Юля'; if ('${proj}'=='LPW') 'Паша'; if ('${proj}'=='RSW') 'Паша'; if ('${proj}'=='thebodyshop.ru: ТП') 'Аня'; if ('${proj}'=='Trends Brands for Friends: ТП') '!Юля'; if ('${proj}'=='Zurich') 'Паша'; if ('${proj}'=='zyxel.ru') 'Паша'; if ('${proj}'=='Авточмо') 'Женя'; if ('${proj}'=='Вестник') 'Женя'; if ('${proj}'=='pik.ru') '!Юля'; if ('${proj}'=='ПИК Тендеры') '!Юля'; if ('${proj}'=='Greensight.ru') 'Паша'; if ('${proj}'=='Компания Greensight » Жидодокс') 'Роман Сергеевич'; if ('${proj}'=='Лидер: ТП') 'Женя'; if ('${proj}'=='Логрус') 'Паша'; if ('${proj}'=='ИНТ') 'Женя'; if ('${proj}'=='Логрус') 'Паша'; if ('${proj}'=='Спаси дитя') 'Женя'; if ('${proj}'=='Nordway') 'Аня';</td>
+	<td>cardType</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>if ('${tracker}'=='Дефект') 'Defect'; else '${cardType}'</td>
+	<td>cardType</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>if ('${user}'=='Анатолий Юдов') 'anatoly@greensight.ru'; if ('${user}'=='Андрей Нелюбин') 'nelubin@greensight.ru'; if ('${user}'=='Анна Щетина') 'shchetina@greensight.ru'; if ('${user}'=='Антон Амелин') 'amelin@greensight.ru'; if ('${user}'=='Дмитрий Крупнов') 'krupnov@greensight.ru'; if ('${user}'=='Егор Волков') 'volkov@greensight.ru'; if ('${user}'=='Екатерина Павлова') 'pavlova@greensight.ru'; if ('${user}'=='Екатерина Каменская') 'kamenskaya@greensight.ru'; if ('${user}'=='Илья Некрасов') 'nekrasov@greensight.ru'; if ('${user}'=='Константин Тюфякин') 'tiufyakin@greensight.ru'; if ('${user}'=='Ольга Лихачева') 'likhacheva@greensight.ru'; if ('${user}'=='Павел Ситкин') 'sitkin@greensight.ru'; if ('${user}'=='Роман Орлов') 'orlov@greensight.ru'; if ('${user}'=='Сергей Мелихов') 'melihov@greensight.ru'; if ('${user}'=='Владимир Лоскутов') 'loskutov@greensight.ru'; if ('${user}'=='Александр Смирнов') 'smirnov@greensight.ru'; if ('${user}'=='Владислав Богомаз') 'bogomaz@greensight.ru'; if ('${user}'=='Евгений Зозуля') 'zozulya@greensight.ru'; if ('${user}'=='Мустафо Зубайдуллоев') 'mustafo@greensight.ru'; if ('${user}'=='Сергей Соколов') 'sokolov@greensight.ru'; if ('${user}'=='Юля Юдова') 'judova@greensight.ru';</td>
+	<td>userType</td>
+</tr>
+<!--Поехали-->
+<tr>
+	<td>open</td>
+	<td>https://greensight.leankit.com/Boards/View/38241271</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=addCard-button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=card-save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>sendKeys</td>
+	<td>id=Card_Title</td>
+	<td>${proj} ${num}: ${title}</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=Card_Type</td>
+	<td>label=${cardType}</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Advanced Settings</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Card_ExternalSystemUrl</td>
+	<td>http://redmine.greensight.ru/issues/${num}</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=Card_LaneId</td>
+	<td>label=${lane}</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Assigned Users</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[contains(text(),'${userType}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=card-save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForNotVisible</td>
+	<td>id=card-save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>${link}</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://redmine.greensight.ru/" />
+<title>FillWeekTime</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">FillWeekTime</td></tr>
+</thead><tbody>
+<tr>
+	<td>storeLocation</td>
+	<td>link</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeXpathCount</td>
+	<td>//span[contains(text(),'Текущая неделя')]/../../../../..//li[@class=&quot;card cmVoice&nbsp;&nbsp;{ cMenu:'menu_Card'}&quot;]</td>
+	<td>numOfCards</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>label=Дизайн</td>
+	<td>kindOfWork</td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>0</td>
+	<td>currentCard</td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>begin</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>${currentCard}+1</td>
+	<td>currentCard</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//span[contains(text(),'Текущая неделя')]/../../../../..//li[@class=&quot;card cmVoice&nbsp;&nbsp;{ cMenu:'menu_Card'}&quot;]//div[@class='kb-size-display'])[${currentCard}]</td>
+	<td>currentTime</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//span[contains(text(),'Текущая неделя')]/../../../../..//li[@class=&quot;card cmVoice&nbsp;&nbsp;{ cMenu:'menu_Card'}&quot;]//div[contains(@class,'text ')])[${currentCard}]</td>
+	<td>currentText</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>'${currentText}'.replace(/\D+/g,&quot;&quot;);</td>
+	<td>currentTask</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>'${currentTask}'.slice(-4);</td>
+	<td>currentTask</td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>http://redmine.greensight.ru/issues/${currentTask}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Обновить</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=time_entry_hours</td>
+	<td>${currentTime}</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=time_entry_activity_id</td>
+	<td>${kindOfWork}</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>css=#issue-form &gt; input[name=&quot;commit&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>${link}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>'${currentCard}'!='${numOfCards}'</td>
+	<td>begin</td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

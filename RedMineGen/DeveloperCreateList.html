@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://redmine.greensight.ru/" />
+<title>TicketCreate</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">TicketCreate</td></tr>
+</thead><tbody>
+<!--Убираем из фильтра все ненужные колонки-->
+<tr>
+	<td>click</td>
+	<td>css=fieldset.collapsible.collapsed &gt; legend</td>
+	<td></td>
+</tr>
+<tr>
+	<td>label</td>
+	<td>delColumns</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=selected_columns</td>
+	<td>index=0</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//input[@value='←']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeSelectOptions</td>
+	<td>id=selected_columns</td>
+	<td>options</td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>storedVars['options'] != ''</td>
+	<td>delColumns</td>
+</tr>
+<!--Отображаем нужные колонки для создания тикетов-->
+<tr>
+	<td>addSelection</td>
+	<td>id=available_columns</td>
+	<td>label=Проект</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=input[type=&quot;button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>id=available_columns</td>
+	<td>label=Тема</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=input[type=&quot;button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>id=available_columns</td>
+	<td>label=Назначена</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=input[type=&quot;button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>id=available_columns</td>
+	<td>label=Автор</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=input[type=&quot;button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>addSelection</td>
+	<td>id=available_columns</td>
+	<td>label=Трекер</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>css=input[type=&quot;button&quot;]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Применить</td>
+	<td></td>
+</tr>
+<!--Определяем сколько у нас тикетов-->
+<tr>
+	<td>storeXpathCount</td>
+	<td>//td[@class='id']</td>
+	<td>col</td>
+</tr>
+<!--Начинаем с первого-->
+<tr>
+	<td>storeLocation</td>
+	<td>mainLink</td>
+	<td></td>
+</tr>
+<tr>
+	<td>store</td>
+	<td>0</td>
+	<td>cur</td>
+</tr>
+<!--Чтение массива тикетов-->
+<tr>
+	<td>label</td>
+	<td>beginToCreate</td>
+	<td></td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>storedVars['cur']=+storedVars['cur']+1</td>
+	<td>cur</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//td[@class='id'])[${cur}]</td>
+	<td>num</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//td[@class='project'])[${cur}]</td>
+	<td>proj</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//td[@class='subject'])[${cur}]</td>
+	<td>title</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//td[@class='assigned_to'])[${cur}]</td>
+	<td>user</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//td[@class='tracker'])[${cur}]</td>
+	<td>tracker</td>
+</tr>
+<tr>
+	<td>storeText</td>
+	<td>xpath=(//td[@class='author'])[${cur}]</td>
+	<td>author</td>
+</tr>
+<!--Трекер: Разработка, Дизайн, Управление, Дефект, Тестирование, Улучшение, Верстка-->
+<tr>
+	<td>store</td>
+	<td>Задачи для оценки</td>
+	<td>lane</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>if ('${proj}'=='Atego') 'Женя'; if ('${proj}'=='Electrolab.ru (гарантийная поддержка до 06.2014)') 'Паша'; if ('${proj}'=='Investcafe: django version') 'Паша'; if ('${proj}'=='lvbco.ru') '!Юля'; if ('${proj}'=='Wolford') '!Юля'; if ('${proj}'=='LPW') 'Паша'; if ('${proj}'=='RSW') 'Паша'; if ('${proj}'=='thebodyshop.ru: ТП') 'Аня'; if ('${proj}'=='Trends Brands for Friends: ТП') '!Юля'; if ('${proj}'=='Zurich') 'Паша'; if ('${proj}'=='zyxel.ru') 'Паша'; if ('${proj}'=='Авточмо') 'Женя'; if ('${proj}'=='Вестник') 'Женя'; if ('${proj}'=='pik.ru') '!Юля'; if ('${proj}'=='ПИК Тендеры') '!Юля'; if ('${proj}'=='Greensight.ru') 'Паша'; if ('${proj}'=='Жидодокс') 'Роман Сергеевич'; if ('${proj}'=='Лидер: ТП') 'Женя'; if ('${proj}'=='Логрус') 'Паша'; if ('${proj}'=='ИНТ') 'Женя'; if ('${proj}'=='Логрус') 'Паша'; if ('${proj}'=='Спаси дитя') 'Женя'; if ('${proj}'=='Nordway') 'Аня';</td>
+	<td>cardType</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>if ('${tracker}'=='Дефект') 'Defect'; else '${cardType}'</td>
+	<td>cardType</td>
+</tr>
+<tr>
+	<td>storeEval</td>
+	<td>if ('${user}'=='Анатолий Юдов') 'anatoly@greensight.ru'; if ('${user}'=='Андрей Нелюбин') 'nelubin@greensight.ru'; if ('${user}'=='Анна Щетина') 'shchetina@greensight.ru'; if ('${user}'=='Антон Амелин') 'amelin@greensight.ru'; if ('${user}'=='Дмитрий Крупнов') 'krupnov@greensight.ru'; if ('${user}'=='Егор Волков') 'volkov@greensight.ru'; if ('${user}'=='Екатерина Павлова') 'pavlova@greensight.ru'; if ('${user}'=='Екатерина Каменская') 'kamenskaya@greensight.ru'; if ('${user}'=='Илья Некрасов') 'nekrasov@greensight.ru'; if ('${user}'=='Константин Тюфякин') 'tiufyakin@greensight.ru'; if ('${user}'=='Ольга Лихачева') 'likhacheva@greensight.ru'; if ('${user}'=='Павел Ситкин') 'sitkin@greensight.ru'; if ('${user}'=='Роман Орлов') 'orlov@greensight.ru'; if ('${user}'=='Сергей Мелихов') 'melihov@greensight.ru'; if ('${user}'=='Владимир Лоскутов') 'loskutov@greensight.ru'; if ('${user}'=='Александр Смирнов') 'smirnov@greensight.ru'; if ('${user}'=='Владислав Богомаз') 'bogomaz@greensight.ru'; if ('${user}'=='Евгений Зозуля') 'zozulya@greensight.ru'; if ('${user}'=='Мустафо Зубайдуллоев') 'mustafo@greensight.ru'; if ('${user}'=='Сергей Соколов') 'sokolov@greensight.ru'; if ('${user}'=='Юля Юдова') 'judova@greensight.ru';</td>
+	<td>userType</td>
+</tr>
+<!--Поехали-->
+<tr>
+	<td>open</td>
+	<td>https://greensight.leankit.com/Boards/View/38241271</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=addCard-button</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=card-save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>sendKeys</td>
+	<td>id=Card_Title</td>
+	<td>${proj} ${num}: ${title}</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=Card_Type</td>
+	<td>label=${cardType}</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Advanced Settings</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=Card_ExternalSystemUrl</td>
+	<td>http://redmine.greensight.ru/issues/${num}</td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>id=Card_LaneId</td>
+	<td>label=${lane}</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>link=Assigned Users</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[contains(text(),'${userType}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=card-save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForNotVisible</td>
+	<td>id=card-save</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>${mainLink}</td>
+	<td></td>
+</tr>
+<tr>
+	<td>gotoIf</td>
+	<td>${col}!=${cur}</td>
+	<td>beginToCreate</td>
+</tr>
+</tbody></table>
+</body>
+</html>
