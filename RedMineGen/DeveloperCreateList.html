@@ -169,8 +169,8 @@
 </tr>
 <tr>
 	<td>storeEval</td>
-	<td>if ('${tracker}'=='Дефект') 'Defect'; else '${cardType}'</td>
-	<td>cardType</td>
+	<td>if ('${tracker}'=='Дефект') 'Bug'; else ''</td>
+	<td>tag</td>
 </tr>
 <tr>
 	<td>storeEval</td>
@@ -204,6 +204,11 @@
 	<td>label=${cardType}</td>
 </tr>
 <tr>
+	<td>runScript</td>
+	<td>tinymce.getInstanceById(1).setContent('&lt;a href=&quot;http://redmine.greensight.ru/issues/${num}&quot; data-mce-href=&quot;http://redmine.greensight.ru/issues/${num}&quot;&gt; http://redmine.greensight.ru/issues/${num} &lt;/a&gt;')</td>
+	<td></td>
+</tr>
+<tr>
 	<td>click</td>
 	<td>link=Advanced Settings</td>
 	<td></td>
@@ -212,6 +217,16 @@
 	<td>type</td>
 	<td>id=Card_ExternalSystemUrl</td>
 	<td>http://redmine.greensight.ru/issues/${num}</td>
+</tr>
+<tr>
+	<td>sendKeys</td>
+	<td>xpath=(//input[@type='text'])[9]</td>
+	<td>${tag}</td>
+</tr>
+<tr>
+	<td>sendKeys</td>
+	<td>xpath=(//input[@type='text'])[9]</td>
+	<td>${KEY_TAB}</td>
 </tr>
 <tr>
 	<td>select</td>
