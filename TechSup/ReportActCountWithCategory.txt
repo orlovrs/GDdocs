@@ -395,12 +395,27 @@ function FillTemplate(inDoc, inData) {
   var sum = 0;
   
   var index = 1;
+  var projectSum = 0;
+  var lastProjectIndex = 0;
   
   for (i=0; i< inData['Datas'].length; i++) {
     if (table != undefined)
     {
 	  if ((inData['Datas'][i][0] != '') && (inData['Datas'][i][1] == ''))
       {
+		lastProjectIndex = i;
+        if (i>1)
+        {
+          var row = table.insertTableRow(index);
+          index++;
+          row.appendTableCell();
+		  row.appendTableCell();
+          row.appendTableCell();
+          row.appendTableCell();
+          row.appendTableCell('Итого:').getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+          row.appendTableCell(projectSum).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+        }
+		
         var row = table.insertTableRow(index);
         index++;
         row.appendTableCell(inData['Datas'][i][0]);
@@ -423,6 +438,18 @@ function FillTemplate(inDoc, inData) {
       index++;
     }
     sum += +inData['Datas'][i][4];
+  }
+  
+  if (lastProjectIndex != 1)
+  {
+    var row = table.insertTableRow(index);
+    index++;
+    row.appendTableCell();
+	row.appendTableCell();
+    row.appendTableCell();
+    row.appendTableCell();
+    row.appendTableCell('Итого:').getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    row.appendTableCell(projectSum).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
   }
   
   if (table != undefined)
