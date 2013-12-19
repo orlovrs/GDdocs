@@ -419,6 +419,7 @@ function FillTemplate(inDoc, inData) {
         var row = table.insertTableRow(index);
         index++;
         row.appendTableCell(inData['Datas'][i][0]);
+        projectSum = inData['Datas'][i][7];
         row.appendTableCell();
         row.appendTableCell();
         row.appendTableCell();
