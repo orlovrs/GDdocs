@@ -73,6 +73,24 @@ function generateAct_() {
     return false;
   
   InputAr = getProjectData(InputAr);
+  getName(InputAr);
+  
+  var flag = true;
+  while (flag)
+  {
+    SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
+    var temp = SpreadsheetApp.getActiveSheet().getRange("D1").getValue();
+    if (!isNaN(parseInt(temp))) flag = false;
+  }
+  
+  InputAr['ResponsibilityID'] = SpreadsheetApp.getActiveSheet().getRange("D1").getValue();
+  SpreadsheetApp.getActiveSheet().getRange("D1").setValue('');
+  
+  InputAr['Response'] = InputAr['Responsibility'][InputAr['ResponsibilityID']][0];
+  InputAr['ResponseUp'] = InputAr['Response'].charAt(0).toUpperCase() + InputAr['Response'].slice(1);
+  InputAr['ResponseLow'] = InputAr['Response'].toLowerCase();
+  
+  InputAr['ResponseName'] = InputAr['Responsibility'][InputAr['ResponsibilityID']][1];
   
   InputAr['Sum'] = 0;
   for (i=0; i<InputAr['Datas'].length; i++)
@@ -172,8 +190,9 @@ function generateCount_()
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
 }
 
-function generateAll_()
+function generateAll_(auto)
 {
+  if (auto == undefined) auto = false;
   var InputAr = new Array();
   
   var Tasks = ReadBaseData();
@@ -194,6 +213,35 @@ function generateAll_()
     return false;
   
   InputAr = getProjectData(InputAr);
+  
+  if (!auto)
+  {
+    getName(InputAr);
+  
+    var flag = true;
+    while (flag)
+    {
+      SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
+      var temp = SpreadsheetApp.getActiveSheet().getRange("D1").getValue();
+      if (!isNaN(parseInt(temp))) flag = false;
+    }
+  
+    InputAr['ResponsibilityID'] = SpreadsheetApp.getActiveSheet().getRange("D1").getValue();
+    SpreadsheetApp.getActiveSheet().getRange("D1").setValue('');
+    
+    InputAr['Response'] = InputAr['Responsibility'][InputAr['ResponsibilityID']][0];
+    InputAr['ResponseUp'] = InputAr['Response'].charAt(0).toUpperCase() + InputAr['Response'].slice(1);
+    InputAr['ResponseLow'] = InputAr['Response'].toLowerCase();
+  
+    InputAr['ResponseName'] = InputAr['Responsibility'][InputAr['ResponsibilityID']][1];
+  }
+  else
+  {
+    InputAr['Response'] = InputAr['Responsibility'][0][0];
+    InputAr['ResponseUp'] = InputAr['Response'].charAt(0).toUpperCase() + InputAr['Response'].slice(1);
+    InputAr['ResponseLow'] = InputAr['Response'].toLowerCase();
+    InputAr['ResponseName'] = InputAr['Responsibility'][0][1];
+  }
   
   var thisFileId = SpreadsheetApp.getActive().getId();
   var thisFile = DocsList.getFileById(thisFileId);
@@ -275,7 +323,7 @@ function AutoGenerateAll()
   var lastReport = sheet[0].getName().toLowerCase();
   
   SpreadsheetApp.getActive().setActiveSheet(sheet[0]);
-  generateAll_();
+  generateAll_(true);
   
   var header = sheet[0].getDataRange().getValues();
   
@@ -328,6 +376,12 @@ function getProjectData(InputAr)
   InputAr['ShortDirectorName'] = data[8][1];
   
   InputAr['WorkName'] = data[9][1] + ' за ' + InputAr['DocName'].toLowerCase()+'г.';
+  
+  InputAr['Responsibility'] = new Array();
+  for (i=10; i<data.length; i++) {
+    var temp = new Array(data[i][1], data[i][2]);
+    InputAr['Responsibility'].push(temp);
+  }
   
   return InputAr;
 }
@@ -441,16 +495,19 @@ function FillTemplate(inDoc, inData) {
     sum += +inData['Datas'][i][4];
   }
   
-  if (lastProjectIndex != 1)
+  if (table != undefined)
   {
-    var row = table.insertTableRow(index);
-    index++;
-    row.appendTableCell();
-	row.appendTableCell();
-    row.appendTableCell();
-    row.appendTableCell();
-    row.appendTableCell('Итого:').getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
-    row.appendTableCell(projectSum).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    if (lastProjectIndex != 1)
+    {
+      var row = table.insertTableRow(index);
+      index++;
+      row.appendTableCell();
+      row.appendTableCell();
+      row.appendTableCell();
+      row.appendTableCell();
+      row.appendTableCell('Итого:').getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      row.appendTableCell(projectSum).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    }
   }
   
   if (table != undefined)
@@ -811,4 +868,32 @@ function FindFiles(inFile, folder) {
     return fileID;
   else
     return false;
+}
+
+function getName(inData) {
+  var mydoc = SpreadsheetApp.getActiveSpreadsheet();
+  var app = UiApp.createApplication().setTitle('Кто будет подписывать документы?'); 
+  var form = app.createFormPanel().setId('form').setEncoding('multipart/form-data');
+
+  var formContent = app.createGrid().resize(inData['Responsibility'].length + 2,1);
+    form.add(formContent);
+  
+  for (i=0; i<inData['Responsibility'].length; i++)
+  {
+    var myRadio = app.createRadioButton("radio", inData['Responsibility'][i][1]).setFormValue(i.toString());
+    formContent.setWidget(i, 0, myRadio);
+  }
+
+  formContent.setWidget(inData['Responsibility'].length + 1, 0, app.createSubmitButton('OK'));
+
+  app.add(form);
+  mydoc.show(app);
+}
+
+function doPost(e) {
+  var app = UiApp.getActiveApplication(); 
+  var id = e.parameter.radio;
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
+  SpreadsheetApp.getActiveSheet().getRange("D1").setValue(id);
+  return app.close();
 }
