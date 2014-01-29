@@ -495,16 +495,19 @@ function FillTemplate(inDoc, inData) {
     sum += +inData['Datas'][i][4];
   }
   
-  if (lastProjectIndex != 1)
+  if (table != undefined)
   {
-    var row = table.insertTableRow(index);
-    index++;
-    row.appendTableCell();
-	row.appendTableCell();
-    row.appendTableCell();
-    row.appendTableCell();
-    row.appendTableCell('Итого:').getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
-    row.appendTableCell(projectSum).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    if (lastProjectIndex != 1)
+    {
+      var row = table.insertTableRow(index);
+      index++;
+      row.appendTableCell();
+      row.appendTableCell();
+      row.appendTableCell();
+      row.appendTableCell();
+      row.appendTableCell('Итого:').getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+      row.appendTableCell(projectSum).getChild(0).asParagraph().setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    }
   }
   
   if (table != undefined)
