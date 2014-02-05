@@ -1,0 +1,5 @@
+function getExt(file, cell)
+{
+  var spread = SpreadsheetApp.openByUrl(file);
+  return spread.getRange(cell.toString()).getValue();
+}
