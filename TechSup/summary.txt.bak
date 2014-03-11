@@ -1,13 +1,13 @@
-п»їfunction summary () {
-  if (!SpreadsheetApp.getActiveSpreadsheet().getSheetByName('РЎРІРѕРґРєР°')
-    SpreadsheetApp.getActiveSpreadsheet().insertSheet('РЎРІРѕРґРєР°');
-  var ColumnName = 'РёС‚РѕРіРѕ СЂСѓР±Р»РµР№';
+function summary () {
+  if (!SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'))
+    SpreadsheetApp.getActiveSpreadsheet().insertSheet('Сводка');
+  var ColumnName = 'итого рублей';
   var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
   var sums = new Array();
   
   for (i=0; i<sheets.length; i++)
   {
-    if ((sheets[i].getName().toLowerCase() == 'СЂРµРєРІРёР·РёС‚С‹')||(sheets[i].getName().toLowerCase() == 'РЎРІРѕРґРєР°'))
+    if ((sheets[i].getName().toLowerCase() == 'реквизиты')||(sheets[i].getName().toLowerCase() == 'сводка'))
       continue;
     SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(sheets[i]);
     var data = SpreadsheetApp.getActiveSheet().getDataRange().getValues();
@@ -29,7 +29,7 @@
     sums.push(obj);
   }
   
-  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('РЎРІРѕРґРєР°'));
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'));
   SpreadsheetApp.getActiveSheet().clear();
   for (i=0; i<sums.length; i++)
   {
