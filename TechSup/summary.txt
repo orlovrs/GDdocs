@@ -1,0 +1,38 @@
+function summary () {
+  if (!SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'))
+    SpreadsheetApp.getActiveSpreadsheet().insertSheet('Сводка');
+  var ColumnName = 'итого рублей';
+  var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+  var sums = new Array();
+  
+  for (i=0; i<sheets.length; i++)
+  {
+    if ((sheets[i].getName().toLowerCase() == 'реквизиты')||(sheets[i].getName().toLowerCase() == 'сводка'))
+      continue;
+    SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(sheets[i]);
+    var data = SpreadsheetApp.getActiveSheet().getDataRange().getValues();
+    var sum = 0;
+    var index = 0;
+
+    for (j=0; j<data[0].length; j++)
+    {
+      if (data[0][j].toString().toLowerCase() == ColumnName)
+        index = j;
+    }
+    
+    for (j=0; j<data.length; j++)
+    {
+      if (!isNaN(parseFloat(data[j][index])))
+        sum+=parseFloat(data[j][index]);
+    }
+    var obj = new Array (sheets[i].getName(), sum);
+    sums.push(obj);
+  }
+  
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'));
+  SpreadsheetApp.getActiveSheet().clear();
+  for (i=0; i<sums.length; i++)
+  {
+    SpreadsheetApp.getActive().appendRow(sums[i]);
+  }
+}
