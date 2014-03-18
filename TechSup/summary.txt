@@ -1,13 +1,13 @@
 ﻿function summary () {
-  if (!SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'))
-    SpreadsheetApp.getActiveSpreadsheet().insertSheet('Сводка');
+  if (!SpreadsheetApp.getActive().getSheetByName('Сводка'))
+    SpreadsheetApp.getActiveSpreadsheet().insertSheet('Сводка', SpreadsheetApp.getActive().getSheets().length);
   var ColumnName = 'итого рублей';
   var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
   var sums = new Array();
   
-  for (i=0; i<sheets.length; i++)
+  for (i=sheets.length - 1; i>=0; i--)
   {
-    if ((sheets[i].getName().toLowerCase() == 'реквизиты')||(sheets[i].getName().toLowerCase() == 'Сводка'))
+    if ((sheets[i].getName().toLowerCase() == 'реквизиты') || (sheets[i].getName().toLowerCase() == 'сводка'))
       continue;
     SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(sheets[i]);
     var data = SpreadsheetApp.getActiveSheet().getDataRange().getValues();
@@ -25,7 +25,25 @@
       if (!isNaN(parseFloat(data[j][index])))
         sum+=parseFloat(data[j][index]);
     }
-    var obj = new Array (sheets[i].getName(), sum);
+    
+    var temp = '';
+    switch (sheets[i].getName().toLowerCase().slice(0, sheets[i].getName().indexOf(' ')))
+    {
+      case 'январь': temp = '01.01.'; break;
+      case 'февраль': temp = '01.02.'; break;
+      case 'март': temp = '01.03.'; break;
+      case 'апрель': temp = '01.04.'; break;
+      case 'май': temp = '01.05.'; break;
+      case 'июнь': temp = '01.06.'; break;
+      case 'июль': temp = '01.07.'; break;
+      case 'август': temp = '01.08.'; break;
+      case 'сентябрь': temp = '01.09.'; break;
+      case 'октябрь': temp = '01.10.'; break;
+      case 'ноябрь': temp = '01.11.'; break;
+      case 'декабрь': temp = '01.12.'; break;
+    }
+    
+    var obj = new Array (temp + sheets[i].getName().slice(sheets[i].getName().indexOf(' ') + 1), sum);
     sums.push(obj);
   }
   
