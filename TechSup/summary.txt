@@ -1,5 +1,5 @@
 ﻿function summary () {
-  if (!SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка')
+  if (!SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'))
     SpreadsheetApp.getActiveSpreadsheet().insertSheet('Сводка');
   var ColumnName = 'итого рублей';
   var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
