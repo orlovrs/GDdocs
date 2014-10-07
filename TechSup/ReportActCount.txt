@@ -749,6 +749,7 @@ function IntegerPart(inData)
   var Begining = inData + ' (';
   var pos = 0;
   var Words = TextSum(inData);
+  Words = Words.charAt(0).toUpperCase() + Words.substr(1);
   return Begining + Words + ')';  
 }
 
