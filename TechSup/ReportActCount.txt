@@ -22,8 +22,8 @@ function generateReport_() {
   InputAr = getProjectData(InputAr);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -39,10 +39,11 @@ function generateReport_() {
     }
   
   var doc = CreateNewDoc('1mMIRmFfGUc2iIRWmbAQFSLBvqZKMookA61qcVvCEuJE',InputAr['ReportName']);
+  
   FillTemplate(doc, InputAr);
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName(InputAr['DocName']));
   
-}  
+}
 
 //   Функция для генерации акта по работам тех. поддержки в формате gdoc
 
@@ -103,8 +104,8 @@ function generateAct_() {
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -156,8 +157,8 @@ function generateCount_()
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -245,9 +246,9 @@ function generateAll_(auto)
   }
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
-  
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
+    
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
   
@@ -403,28 +404,28 @@ function onOpen() {
 
 function CreateNewDoc(ID, docName) {
  //Making copy of blank file
-  var blankDoc = DocsList.getFileById(ID).makeCopy(docName);
+  var blankDoc = DriveApp.getFileById(ID);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
-  blankDoc.addToFolder(DocsList.getFolder(parentFolder));
+  var newID = blankDoc.makeCopy(docName, DriveApp.getFoldersByName(parentFolder).next()).getId();
   
-  return curDoc = DocumentApp.openById(blankDoc.getId()); 
+  return curDoc = DocumentApp.openById(newID); 
 }
 
 function CreateNewSpread(ID, docName) {
  //Making copy of blank file
-  var blankDoc = DocsList.getFileById(ID).makeCopy(docName);
+  var blankDoc = DriveApp.getFileById(ID);
   //blankDoc.addToFolder(DocsList.getFolder(Folder.getId()));
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
-  blankDoc.addToFolder(DocsList.getFolder(parentFolder));
-  return curDoc = SpreadsheetApp.openById(blankDoc.getId()); 
+  var newID = blankDoc.makeCopy(docName, DriveApp.getFoldersByName(parentFolder).next()).getId();
+  return curDoc = SpreadsheetApp.openById(newID); 
 }
 
 function FillTemplate(inDoc, inData) {
@@ -653,7 +654,7 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   switch (inData['DocName'].slice(0,inData['DocName'].indexOf(' ')).toLowerCase())
   {
     case 'январь': realMon = 1; break;
-    case  'февраль': realMon = 2; break;
+    case  'Февраль': realMon = 2; break;
     case  'март': realMon = 3; break;
     case  'апрель': realMon = 4; break;
     case  'май': realMon = 5; break;
@@ -749,7 +750,6 @@ function IntegerPart(inData)
   var Begining = inData + ' (';
   var pos = 0;
   var Words = TextSum(inData);
-  Words = Words.charAt(0).toUpperCase() + Words.substr(1);
   return Begining + Words + ')';  
 }
 
@@ -839,7 +839,7 @@ function CheckFileExist(inFile, folder)
     {
       for (i=0; i<file.length; i++)
       {
-        DocsList.getFileById(file[i]).setTrashed(true);
+        DriveApp.getFileById(file[i]).setTrashed(true);
       }
       return true;
     }
@@ -849,16 +849,16 @@ function CheckFileExist(inFile, folder)
 }
 
 function FindFiles(inFile, folder) {
-  var files = DocsList.getFolder(folder).getFiles();
+  var files = DriveApp.getFoldersByName(folder).next().getFiles();
   var fileID = new Array();
   var flag = false;
   
-  for (i=0; i< files.length; i++)
+  while (files.hasNext())
   {
-    if (files[i].getName() == inFile)
+    if (files.next().getName() == inFile)
     {
       flag = true;
-      fileID.push(files[i].getId());
+      fileID.push(files.next().getId());
     }
   }
   if (flag)
@@ -893,4 +893,43 @@ function doPost(e) {
   SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Реквизиты'));
   SpreadsheetApp.getActiveSheet().getRange("D1").setValue(id);
   return app.close();
+}
+
+function summary () {
+  if (!SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'))
+    SpreadsheetApp.getActiveSpreadsheet().insertSheet('Сводка');
+  var ColumnName = 'итого рублей';
+  var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+  var sums = new Array();
+  
+  for (i=0; i<sheets.length; i++)
+  {
+    if ((sheets[i].getName().toLowerCase() == 'реквизиты')||(sheets[i].getName().toLowerCase() == 'сводка'))
+      continue;
+    SpreadsheetApp.getActiveSpreadsheet().setActiveSheet(sheets[i]);
+    var data = SpreadsheetApp.getActiveSheet().getDataRange().getValues();
+    var sum = 0;
+    var index = 0;
+
+    for (j=0; j<data[0].length; j++)
+    {
+      if (data[0][j].toString().toLowerCase() == ColumnName)
+        index = j;
+    }
+    
+    for (j=0; j<data.length; j++)
+    {
+      if (!isNaN(parseFloat(data[j][index])))
+        sum+=parseFloat(data[j][index]);
+    }
+    var obj = new Array (sheets[i].getName(), sum);
+    sums.push(obj);
+  }
+  
+  SpreadsheetApp.setActiveSheet(SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Сводка'));
+  SpreadsheetApp.getActiveSheet().clear();
+  for (i=0; i<sums.length; i++)
+  {
+    SpreadsheetApp.getActive().appendRow(sums[i]);
+  }
 }

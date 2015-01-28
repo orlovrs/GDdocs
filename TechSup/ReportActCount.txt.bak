@@ -653,7 +653,7 @@ function ActNumForm(inData, NumConfirm, NumNotGen)
   switch (inData['DocName'].slice(0,inData['DocName'].indexOf(' ')).toLowerCase())
   {
     case 'январь': realMon = 1; break;
-    case  'Февраль': realMon = 2; break;
+    case  'февраль': realMon = 2; break;
     case  'март': realMon = 3; break;
     case  'апрель': realMon = 4; break;
     case  'май': realMon = 5; break;
@@ -749,6 +749,7 @@ function IntegerPart(inData)
   var Begining = inData + ' (';
   var pos = 0;
   var Words = TextSum(inData);
+  Words = Words.charAt(0).toUpperCase() + Words.substr(1);
   return Begining + Words + ')';  
 }
 

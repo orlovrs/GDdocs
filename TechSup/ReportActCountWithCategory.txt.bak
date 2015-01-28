@@ -23,8 +23,8 @@ function generateReport_() {
   InputAr = getProjectData(InputAr);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -104,8 +104,8 @@ function generateAct_() {
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -157,8 +157,8 @@ function generateCount_()
   InputAr['Integer'] = IntegerPart(InputAr['Sum']);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -244,8 +244,8 @@ function generateAll_(auto)
   }
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
   if (!CheckFileExist(InputAr['ReportName'], parentFolder))
     return false;
@@ -403,28 +403,28 @@ function onOpen() {
 
 function CreateNewDoc(ID, docName) {
  //Making copy of blank file
-  var blankDoc = DocsList.getFileById(ID).makeCopy(docName);
+  var blankDoc = DriveApp.getFileById(ID);
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
-  blankDoc.addToFolder(DocsList.getFolder(parentFolder));
+  var newID = blankDoc.makeCopy(docName, DriveApp.getFoldersByName(parentFolder).next()).getId();
   
-  return curDoc = DocumentApp.openById(blankDoc.getId()); 
+  return curDoc = DocumentApp.openById(newID); 
 }
 
 function CreateNewSpread(ID, docName) {
  //Making copy of blank file
-  var blankDoc = DocsList.getFileById(ID).makeCopy(docName);
+  var blankDoc = DriveApp.getFileById(ID);
   //blankDoc.addToFolder(DocsList.getFolder(Folder.getId()));
   
   var thisFileId = SpreadsheetApp.getActive().getId();
-  var thisFile = DocsList.getFileById(thisFileId);
-  var parentFolder = thisFile.getParents()[0].getName();
+  var thisFile = DriveApp.getFileById(thisFileId);
+  var parentFolder = thisFile.getParents().next().getName();
   
-  blankDoc.addToFolder(DocsList.getFolder(parentFolder));
-  return curDoc = SpreadsheetApp.openById(blankDoc.getId()); 
+  var newID = blankDoc.makeCopy(docName, DriveApp.getFoldersByName(parentFolder).next()).getId();
+  return curDoc = SpreadsheetApp.openById(newID); 
 }
 
 function FillTemplate(inDoc, inData) {
@@ -753,6 +753,7 @@ function IntegerPart(inData)
   var Begining = inData + ' (';
   var pos = 0;
   var Words = TextSum(inData);
+  Words = Words.charAt(0).toUpperCase() + Words.substr(1);
   return Begining + Words + ')';  
 }
 
