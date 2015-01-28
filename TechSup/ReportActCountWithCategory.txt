@@ -862,7 +862,7 @@ function FindFiles(inFile, folder) {
     if (files[i].getName() == inFile)
     {
       flag = true;
-      fileID.push(files[i].getId());
+      fileID.push(files.next().getId());
     }
   }
   if (flag)

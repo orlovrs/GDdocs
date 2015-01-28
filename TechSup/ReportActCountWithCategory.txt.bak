@@ -843,7 +843,7 @@ function CheckFileExist(inFile, folder)
     {
       for (i=0; i<file.length; i++)
       {
-        DocsList.getFileById(file[i]).setTrashed(true);
+        DriveApp.getFileById(file[i]).setTrashed(true);
       }
       return true;
     }
@@ -853,7 +853,7 @@ function CheckFileExist(inFile, folder)
 }
 
 function FindFiles(inFile, folder) {
-  var files = DocsList.getFolder(folder).getFiles();
+  var files = DriveApp.getFoldersByName(folder).next().getFiles();
   var fileID = new Array();
   var flag = false;
   
